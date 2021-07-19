@@ -29,7 +29,7 @@ protected:
 //		bool IsRunning() { CheckActive(); return m_status >= Status::Running; }
 		bool IsOnline() { return m_status == Status::Online; }
 //		bool IsOnline() { CheckActive(); return m_status == Status::Online; }
-		void SetStatus(enum class Status stat, int nSecs = 60);
+		void SetStatus(enum class Status stat);
 		LONG GetValidSecs() { CTimeSpan ts(m_timeUpd - CTime::GetCurrentTime()); return (LONG)ts.GetTotalSeconds(); }
 	//	void WaitActive();
 		CString StatusMsg();
@@ -41,7 +41,7 @@ protected:
 		CTime m_timeUpd;	// no re-check before this time; see IsCurrent()
 	//	CTime m_timeActive;	// delayed active statusNext -> status
 		enum class Status m_status = Status::Unknown;
-	//	enum class Status m_statusNext = Status::Unknown;
+		enum class Status m_statusNext = Status::Unknown;
 	};
 
 public:

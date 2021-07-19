@@ -27,20 +27,23 @@ bool CDriveCheck::CDriveInfo::IsCurrent()
 	return m_timeUpd > CTime::GetCurrentTime();
 }
 
-void CDriveCheck::CDriveInfo::SetStatus(enum Status stat, int nSecs)
+void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 {
+	int nSecs = 60;
+	if (stat == Status::NoPing)
+		nSecs = 300;
 	TRACE3("CDriveInfo::SetStatus %d %s %ds\n", stat, (LPCTSTR)m_strName, nSecs);
 	if (stat == Status::Force && m_status < Status::Running)
 		return;
 
-//	m_statusNext = stat;
-//	if (stat > m_status && stat >= Status::Running && nSecs > 60)
-//	{
-//		CTimeSpan d(nSecs - 10);	// activate status delayed via CheckActive / WaitActive
-//		m_timeActive = CTime::GetCurrentTime() + d;
-//	}
-//	else
+	if (stat <= m_statusNext || CTime::GetCurrentTime() >= m_timeUpd)
+	{
 		m_status = stat;
+		TRACE1(" %s\n", (LPCTSTR)StatusMsg());
+	}
+	else
+		TRACE0(" delayed\n");
+	m_statusNext = stat;
 	CTimeSpan d(nSecs);
 	m_timeUpd = CTime::GetCurrentTime() + d;
 }
@@ -212,7 +215,7 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 			driveInfoRes = driveInfoSrv;
 			return _T("");	// ok
 		}
-		driveInfoSrv.SetStatus(Status::NoPing, 300);	//  retry after 5 min
+		driveInfoSrv.SetStatus(Status::NoPing);	//  retry after 5 min
 		driveInfoRes = driveInfoSrv;
 		return driveInfoRes.StatusMsg();
 		//return _T("Server \"") + strSrv + _T("\" gives no ping response.");
