@@ -33,10 +33,10 @@ public:
 		{
 			ARG_TYPE obj = GetAt(pos);
 			int c = obj.Compare(item);
-			if (c <= 0)
+			if (c == 0)
+				return NULL;	// already present
+			if (c < 0)
 				break;
-//			if (obj.IsLessEqual(item))
-//				break;
 			GetPrev(pos);
 		}
 		return pos == NULL ? AddHead(item) : InsertAfter(pos, item);

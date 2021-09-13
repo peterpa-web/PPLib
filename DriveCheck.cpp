@@ -170,11 +170,12 @@ CString CDriveCheck::CheckDrive(const CString& strPath) {
 	if (strPath.IsEmpty() || strPath[0] != '\\')
 	{
 		if (strPath.GetLength() > 2 && strPath[1] == ':') { // check drive letter
+			if (m_dwDrives == 0)
+				m_dwDrives = GetLogicalDrives();
 			int nDrive = toupper(strPath[0]) - 'A';
 			DWORD dwDrive = 1 << nDrive;
-			DWORD dwDrives = GetLogicalDrives();
-			if ((dwDrive & dwDrives) == 0) {
-				return _T("Drive \"") + strPath.Left(2) + _T("\" is down.");;
+			if ((dwDrive & m_dwDrives) == 0) {
+				return _T("Drive \"") + strPath.Left(2) + _T("\" is down.");
 			}
 		}
 		return _T("");	// drive found
@@ -221,5 +222,14 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 		//return _T("Server \"") + strSrv + _T("\" gives no ping response.");
 	}
 	return _T("");	// no net drive
+}
+
+void CDriveCheck::RemoveDrive(const CString strPath)
+{
+	if (strPath.GetLength() > 2 && strPath[1] == ':') { // check drive letter
+		int nDrive = toupper(strPath[0]) - 'A';
+		DWORD dwDrive = 1 << nDrive;
+		m_dwDrives &= ~dwDrive;
+	}
 }
 
