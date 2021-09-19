@@ -106,6 +106,12 @@ CDriveCheck::CDriveInfo& CDriveCheck::GetNetDriveInfo(CString strSrv)
 }
 
 
+void CDriveCheck::Reset()
+{
+	m_listDriveInfo.RemoveAll();
+	m_dwDrives = 0;
+}
+
 CString CDriveCheck::CheckParentPath(const CString& strPath, bool bForce)
 {
 	int p = strPath.ReverseFind('\\');
@@ -140,7 +146,10 @@ CString CDriveCheck::CheckDirPath(const CString& strPath, bool bForce)
 				strError = _T("(Folder \"") + strPath + _T("\" temporary not available.)");
 		}
 		else
+		{
 			strError = _T("Folder \"") + strPath + _T("\" not found.");
+			RemoveDrive(strPath);
+		}
 		return strError;
 	}
 	if (!driveInfo.IsUnknown())

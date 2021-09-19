@@ -398,8 +398,9 @@ BOOL CEventLogException::ReportEvent(
 	WORD wNumStrings = 3;
 	LPCTSTR alpString[ 3 ];
 
+	CString strClassName = CString(GetRuntimeClass()->m_lpszClassName);
 	alpString[ 0 ] = m_strMsg;
-	alpString[ 1 ] = CString(GetRuntimeClass()->m_lpszClassName);
+	alpString[ 1 ] = strClassName;
 	alpString[ 2 ] = m_strContext;
 
 #ifdef _DEBUG

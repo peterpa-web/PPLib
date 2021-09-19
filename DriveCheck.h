@@ -45,6 +45,7 @@ protected:
 	};
 
 public:
+	void Reset();
 	CString CheckParentPath(const CString& strPath, bool bForce = false); // returns error msg
 	CString CheckDirPath(const CString& strPath, bool bForce = false); // returns error msg
 	CString CheckRootPath(const CString& strPath); // returns error msg

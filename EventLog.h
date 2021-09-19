@@ -109,6 +109,7 @@ public:
 	CEventLogException( DWORD dwMsg, DWORD dwLastError, LPCTSTR pszMsg = NULL );
 	CEventLogException( LPCTSTR pszMsg = NULL );
 	DWORD GetMsgCode() { return m_dwMsg; }
+	const CString& GetMessage() const { return m_strMsg; }
 
 	static void SetContext( CString const & strContext ) { m_strContext = strContext; }
 	static CString GetContext() { return m_strContext; }
