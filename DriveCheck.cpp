@@ -178,7 +178,7 @@ CString CDriveCheck::CheckDrive(const CString& strPath) {
 	TRACE1("CheckDrive %s\n", strPath);
 	if (strPath.IsEmpty() || strPath[0] != '\\')
 	{
-		if (strPath.GetLength() > 2 && strPath[1] == ':') { // check drive letter
+		if (strPath.GetLength() >= 2 && strPath[1] == ':') { // check drive letter
 			if (m_dwDrives == 0)
 				m_dwDrives = GetLogicalDrives();
 			int nDrive = toupper(strPath[0]) - 'A';
