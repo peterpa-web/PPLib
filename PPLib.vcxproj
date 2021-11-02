@@ -92,6 +92,7 @@
     <ClCompile Include="ConsApp.cpp" />
     <ClCompile Include="DriveCheck.cpp" />
     <ClCompile Include="EventLog.cpp" />
+    <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="Ping.cpp" />
     <ClCompile Include="registry.cpp" />
     <ClCompile Include="ServerSocket.cpp" />
@@ -113,6 +114,7 @@
     <ClInclude Include="ConsApp.h" />
     <ClInclude Include="DriveCheck.h" />
     <ClInclude Include="EventLog.h" />
+    <ClInclude Include="HttpClient.h" />
     <ClInclude Include="Ping.h" />
     <ClInclude Include="registry.h" />
     <ClInclude Include="ServerSocket.h" />

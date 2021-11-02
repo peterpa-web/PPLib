@@ -1,4 +1,4 @@
-// SniInetException.cpp: implementation of the CsniInetException class
+// InetException.cpp: implementation of the CsniInetException class
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CsniException
+// CInetException
 
 IMPLEMENT_DYNAMIC(CInetException, CEventLogException)
 
@@ -70,7 +70,7 @@ void CInetException::initMsg2( DWORD dwMsg, DWORD dwLastError, LPCTSTR pszMsg )
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CsniException diagnostics
+// CInetException diagnostics
 
 #ifdef _DEBUG
 void CInetException::AssertValid() const
@@ -85,7 +85,7 @@ void CInetException::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 /////////////////////////////////////////////////////////////////////////////
-// CsniException commands
+// CInetException commands
 
 BOOL CInetException::GetErrorMessage( 
 		LPTSTR lpszError, UINT nMaxError,
@@ -102,7 +102,7 @@ BOOL CInetException::GetErrorMessage(
 	CString strMsg;
 	if ( ! m_strContext.IsEmpty() )
 		strMsg = m_strContext + _T(": ");
-	strMsg += _T("CsniInetException: ") + m_strMsg;
+	strMsg += _T("CInetException: ") + m_strMsg;
 	
 	lstrcpyn( lpszError, strMsg, nMaxError );
 	return TRUE;
@@ -120,7 +120,7 @@ BOOL CInetException::ReportEvent(
 	LPCTSTR alpString[ 3 ];
 
 	alpString[ 0 ] = m_strMsg;
-	alpString[ 1 ] = _T("CsniInetException");
+	alpString[ 1 ] = _T("CInetException");
 	alpString[ 2 ] = m_strContext;
 
 	TRACE3( "LogWrite %s %s %s\n", alpString[ 1 ], alpString[ 2 ], alpString[ 0 ] );

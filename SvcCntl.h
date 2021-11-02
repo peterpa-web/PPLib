@@ -57,11 +57,6 @@ public:
 
 	void EnumDependentServices( DWORD dwServiceState, CStringArray &astrSvcNames );
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CsniSvcCntl)
-	//}}AFX_VIRTUAL
-
 // Implementation
 public:
 	virtual ~CSvcCntl();
