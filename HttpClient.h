@@ -31,7 +31,7 @@ class CHttpRequest
 public:
 	CHttpRequest(CHttpConnection& c, const CString& strVerb, const CString& strPath);
 	~CHttpRequest() { if (m_hRequest) WinHttpCloseHandle(m_hRequest); }
-	DWORD SendReceive(CStringA& strRsp);
+	CStringA SendReceive();
 
 protected:
 	CHttpConnection& m_conn;
@@ -45,12 +45,12 @@ class CHttpClient
 public:
 	CHttpClient(LPCWSTR pszAgent) : m_strAgent(pszAgent) {}
 	void SetUrl(const CString& strUrl);
-	DWORD Get(CStringA& strRsp);
+	CStringA Get();
 
 protected:
 	CString m_strAgent;
 	CString m_strServer;
-	INTERNET_PORT m_nPort;
+	INTERNET_PORT m_nPort = 0;
 	CString m_strPath;
 };
 

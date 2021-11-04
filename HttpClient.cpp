@@ -28,8 +28,9 @@ CHttpRequest::CHttpRequest(CHttpConnection& c, const CString& strVerb, const CSt
 		throw new CInetException(L"WinHttpOpenRequest", GetLastError());
 }
 
-DWORD CHttpRequest::SendReceive(CStringA& strRsp)
+CStringA CHttpRequest::SendReceive()
 {
+	CStringA strRsp;
 	ASSERT(m_hRequest);
 	BOOL bRes = WinHttpSendRequest(m_hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
 	if (!bRes)
@@ -40,22 +41,24 @@ DWORD CHttpRequest::SendReceive(CStringA& strRsp)
 		throw new CInetException(L"WinHttpReceiveResponse", GetLastError());
 
 	DWORD dwSize = 0;
-	DWORD dwDownloaded = 0;
 	if (bRes) do
 	{
 		dwSize = 0;
 		if (!WinHttpQueryDataAvailable(m_hRequest, &dwSize))
 			throw new CInetException(L"WinHttpQueryDataAvailable", GetLastError());
+		if (dwSize == 0)
+			break;
 
 		CStringA strRspPart;
 		LPSTR pBuf = strRspPart.GetBuffer(dwSize + 1);
-		if (!WinHttpReadData(m_hRequest, pBuf, dwSize, &dwDownloaded))
+		DWORD dwRead = 0;
+		if (!WinHttpReadData(m_hRequest, pBuf, dwSize, &dwRead))
 			throw new CInetException(L"WinHttpReadData", GetLastError());
 
-		strRspPart.ReleaseBuffer(dwSize);
+		strRspPart.ReleaseBuffer(dwRead);
 		strRsp += strRspPart;
 	} while (dwSize > 0);
-	return dwDownloaded;
+	return strRsp;
 }
 
 void CHttpClient::SetUrl(const CString& strUrl)
@@ -85,13 +88,12 @@ void CHttpClient::SetUrl(const CString& strUrl)
 		m_strPath = CString(urlComp.lpszUrlPath, urlComp.dwUrlPathLength);
 }
 
-DWORD CHttpClient::Get(CStringA& strRsp)
+CStringA CHttpClient::Get()
 {
 	CHttpSession session(m_strAgent);
 	CHttpConnection conn(session, m_strServer, m_nPort);
 	CHttpRequest requ(conn, L"GET", m_strPath);
-	DWORD dwDownloaded = requ.SendReceive(strRsp);
-	return dwDownloaded;
+	return requ.SendReceive();
 }
 
 // https://stackoverflow.com/questions/23906654/how-to-get-http-status-code-from-winhttp-request
