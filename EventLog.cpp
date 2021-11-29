@@ -8,9 +8,11 @@
 //
 
 #include "stdafx.h"
-#include "EventLog.h"
 #include "registry.h"
 #include "strsafe.h"
+#include "SimpleMsg/SimpleMsg.h"
+
+#include "EventLog.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CEventLog 
@@ -307,7 +309,7 @@ CEventLogException::CEventLogException( DWORD dwMsg, DWORD dwLastError, LPCTSTR 
 CEventLogException::CEventLogException( LPCTSTR pszMsg /* = NULL */ )
 {
 //	DWORD dwMsg = CEventLog::GetMsgBase();
-	DWORD dwMsg = 0;
+	DWORD dwMsg = MSG_INFO;
 	DWORD dwLastError = GetLastError();
 
 	initMsg2( dwMsg, dwLastError, pszMsg );

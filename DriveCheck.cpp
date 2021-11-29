@@ -179,17 +179,18 @@ CString CDriveCheck::CheckDrive(const CString& strPath) {
 	if (strPath.IsEmpty() || strPath[0] != '\\')
 	{
 		if (strPath.GetLength() >= 2 && strPath[1] == ':') { // check drive letter
-			if (m_dwDrives == 0)
-				m_dwDrives = GetLogicalDrives();
 			int nDrive = toupper(strPath[0]) - 'A';
+			TRACE1(" dw=0x%x\n", m_dwDrives);
 			DWORD dwDrive = 1 << nDrive;
+			if ((dwDrive & m_dwDrives) == 0)
+				m_dwDrives = GetLogicalDrives();
 			if ((dwDrive & m_dwDrives) == 0) {
 				return _T("Drive \"") + strPath.Left(2) + _T("\" is down.");
 			}
 		}
-		return _T("");	// drive found
+		return CString();	// drive found
 	}
-	return _T("");		// network path can't be checked
+	return CString();		// network path can't be checked
 }
 
 CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoRes) {
