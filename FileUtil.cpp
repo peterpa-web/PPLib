@@ -94,3 +94,31 @@ int CFileUtil::GetProgress()
 	ULONGLONG p = (m_llProgress + m_llFileProgress) / llSize;
 	return (int)p;
 }
+
+int CFileUtil::CountFiles(const CString& strDstPath)
+{
+	int nFiles = 0;
+	CFileFind finder;
+	BOOL bWorking = finder.FindFile(strDstPath + _T("/*.*"));
+	while (bWorking)
+	{
+		if (m_fCanceled)
+			return 0;
+
+		bWorking = finder.FindNextFile();
+		if (!bWorking)
+		{
+			DWORD dwLastErr = GetLastError();
+			if (dwLastErr != ERROR_NO_MORE_FILES)
+				CFileException::ThrowOsError(dwLastErr, strDstPath);
+		}
+		if (finder.IsDots() || finder.IsHidden() || finder.IsSystem())
+			continue;
+
+		if (finder.IsDirectory())
+			nFiles += CountFiles(finder.GetFilePath());
+		else
+			++nFiles;
+	}
+	return nFiles;
+}

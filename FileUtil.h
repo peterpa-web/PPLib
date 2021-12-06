@@ -19,6 +19,8 @@ public:
 	void AddProgress(ULONGLONG llSize) { m_llProgress += llSize; }
 	int GetProgress();
 
+	int CountFiles(const CString& strDstPath);
+
 protected:
 	BOOL &m_fCanceled;
 	ULONGLONG m_llSize = 0;				// file size sum
