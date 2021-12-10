@@ -14,10 +14,12 @@ public:
 
 	void CopyFileProgress(LPCTSTR lpSource, LPCTSTR lpDest);
 	void SetSize(ULONGLONG llSize) { m_llSize = llSize; }
+	void AddSize(ULONGLONG llSize) { m_llSize += llSize; }
 	ULONGLONG GetSize() { return m_llSize; }
 	void ResetProgress() { m_llProgress = 0; m_llFileProgress = 0; }
 	void AddProgress(ULONGLONG llSize) { m_llProgress += llSize; }
 	int GetProgress();
+	ULONGLONG* GetProgressAddr() { return &m_llProgress; }
 
 	int CountFiles(const CString& strDstPath);
 
