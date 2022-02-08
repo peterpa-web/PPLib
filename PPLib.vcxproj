@@ -103,6 +103,7 @@
     <ClCompile Include="SimpleThread.cpp" />
     <ClCompile Include="InetException.cpp" />
     <ClCompile Include="SortedList.cpp" />
+    <ClCompile Include="StringUtil.cpp" />
     <ClCompile Include="SvcCntl.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -126,6 +127,7 @@
     <ClInclude Include="SimpleThread.h" />
     <ClInclude Include="InetException.h" />
     <ClInclude Include="SortedList.h" />
+    <ClInclude Include="StringUtil.h" />
     <ClInclude Include="SvcCntl.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ThreadSocket.h" />
