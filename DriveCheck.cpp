@@ -219,8 +219,11 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 
 		TRACE1("CheckNetPath ping %s\n", strSrv);
 		CPing ping;
-		ping.SetHostIP(CStringA(strSrv));
-		if (ping.SendEcho())
+		BOOL bRetH = ping.SetHostIP(CStringA(strSrv));
+		BOOL bRetP = bRetH && ping.SendEcho();
+		if (bRetH && !bRetP)
+			bRetP = ping.SendEcho();
+		if (bRetP)
 		{
 			driveInfoSrv.SetStatus(Status::Running);
 			driveInfoRes = driveInfoSrv;

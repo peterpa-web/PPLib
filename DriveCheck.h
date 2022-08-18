@@ -12,6 +12,7 @@ protected:
 		Online
 	};
 
+public:
 	class CDriveInfo
 	{
 	public:
@@ -44,11 +45,11 @@ protected:
 		enum class Status m_statusNext = Status::Unknown;
 	};
 
-public:
 	void Reset();
 	CString CheckParentPath(const CString& strPath, bool bForce = false); // returns error msg
 	CString CheckDirPath(const CString& strPath, bool bForce = false); // returns error msg
 	CString CheckRootPath(const CString& strPath); // returns error msg
+	CString CheckRootPath(const CString& strPath, CDriveInfo &driveInfoRes);
 	void RemoveDrive(const CString strPath);
 	void InitDrives() { m_dwDrives = 0; }
 
@@ -57,7 +58,6 @@ protected:
 	DWORD m_dwDrives = 0;
 
 	CDriveInfo& GetNetDriveInfo(CString strSrv);
-	CString CheckRootPath(const CString& strPath, CDriveInfo &driveInfoRes);
 	CString CheckDrive(const CString& strPath);
 	CString CheckNetPath(const CString& strPath, CDriveInfo &driveInfoRes);
 };

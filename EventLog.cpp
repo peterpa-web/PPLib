@@ -17,14 +17,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // CEventLog 
 
-CEventLog* CEventLog::s_pEventLog = NULL;	// static init
+CEventLog* CEventLog::s_pEventLog = nullptr;	// static init
 //DWORD CEventLog::m_dwDefaultMsgBase = 0;
 
 CEventLog::CEventLog()
 {
-	m_hEventLogWrite = NULL;
-	m_pTokenUser = NULL;
-	m_lpUserSid = NULL;
 }
 
 CEventLog::~CEventLog()
@@ -48,6 +45,7 @@ void CEventLog::Init(
 {
 	if ( s_pEventLog == NULL )
 		s_pEventLog = new CEventLog();
+	ASSERT(s_pEventLog->m_nMsg == 0 && s_pEventLog->m_strSourceName.IsEmpty());
 
 	if ( lpSourceName == NULL )
 		s_pEventLog->m_strSourceName = AfxGetApp()->m_pszAppName;
@@ -72,6 +70,15 @@ void CEventLog::Init(
 		ASSERT( FALSE );
 	}
 #endif
+}
+
+void CEventLog::InitMsg(UINT nMsg, CWnd* pTargetWnd)
+{
+	if (s_pEventLog == NULL)
+		s_pEventLog = new CEventLog();
+	ASSERT(s_pEventLog->m_nMsg == 0 && s_pEventLog->m_strSourceName.IsEmpty());
+	s_pEventLog->m_nMsg = nMsg;
+	s_pEventLog->m_pTargetWnd = pTargetWnd;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -161,12 +168,37 @@ BOOL CEventLog::Write(
 )
 {
 	CEventLog &inst = GetInstance();
+	if (inst.m_nMsg != 0 && wNumStrings >= 1)
+	{
+		CString* pTxt = new CString(lpStrings[0]);
+		for (int n = 1; n < wNumStrings; n++)
+		{
+			*pTxt += '\n' + lpStrings[n];
+		}
+		WPARAM wT = NIIF_NONE;
+		switch (wType)
+		{
+		case EVENTLOG_INFORMATION_TYPE:
+			wT = NIIF_INFO;
+			break;
+		case EVENTLOG_WARNING_TYPE:
+			wT = NIIF_WARNING;
+			break;
+		case EVENTLOG_ERROR_TYPE:
+			wT = NIIF_ERROR;
+			break;
+		default:
+			break;
+		}
+		ASSERT(inst.m_pTargetWnd->PostMessage(inst.m_nMsg, wT, (LPARAM)pTxt));
+		return TRUE;
+	}
 	BOOL bRc = ReportEvent( 
 		inst.m_hEventLogWrite,	// handle returned by RegisterEventSource 
 		wType,				// event type to log
 		wCategory,			// event category
 		dwEventID,			// event identifier 
-		GetInstance().m_lpUserSid,		// user security identifier (optional)
+		inst.m_lpUserSid,		// user security identifier (optional)
 		wNumStrings,		// number of strings to merge with message
 		dwDataSize,			// size of binary data, in bytes
 		lpStrings,			// array of strings to merge with message 
@@ -175,6 +207,7 @@ BOOL CEventLog::Write(
 	if ( !bRc )
 	{
 		DWORD dwErr = GetLastError();
+		TRACE1("ReportEvent err=%d\n", dwErr);
 		ASSERT( FALSE );
 	}
 #endif

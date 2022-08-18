@@ -79,7 +79,7 @@ void CFileUtil::CopyFileProgress(LPCTSTR lpSource, LPCTSTR lpDest)
 	}
 	catch (CException* pe)
 	{
-		ASSERT(FALSE);
+//		ASSERT(FALSE);
 		DeleteFile(strDestTmp);
 		throw pe;
 	}

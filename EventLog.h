@@ -11,9 +11,11 @@ protected:
 
 	CString	m_strUNCServerName;
 	CString	m_strSourceName;
-	PSID	m_lpUserSid;	// user security identifier (optional) 
-	PTOKEN_USER	m_pTokenUser;
-	HANDLE	m_hEventLogWrite;
+	PSID	m_lpUserSid = nullptr;	// user security identifier (optional) 
+	PTOKEN_USER	m_pTokenUser = nullptr;
+	HANDLE	m_hEventLogWrite = NULL;
+	CWnd* m_pTargetWnd = nullptr;
+	UINT m_nMsg = 0;
 
 // Constructor
 private:
@@ -24,7 +26,7 @@ public:
 	static void CleanStatic() {
 		if (s_pEventLog != NULL)
 			delete s_pEventLog;
-		s_pEventLog = NULL;
+		s_pEventLog = nullptr;
 	}
 
 // Operations
@@ -42,7 +44,9 @@ public:
 
 	static void Init( LPCTSTR lpSourceName = NULL,
 			          PSID    lpUserSid = NULL,
-			          LPCTSTR lpUNCServerName = NULL );
+					  LPCTSTR lpUNCServerName = NULL);
+
+	static void InitMsg(UINT nMsg, CWnd* pTargetWnd);
 
 	void Register( 
 		LPCTSTR lpEventMessageFile = NULL,

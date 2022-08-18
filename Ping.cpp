@@ -75,18 +75,6 @@ BOOL CPing::SetHostIP( const char *pszHostIP )
 	struct sockaddr_in *sockaddr_ipv4 = (struct sockaddr_in *)result->ai_addr;
 	m_ipaddr = sockaddr_ipv4->sin_addr.S_un.S_addr;
 	freeaddrinfo(result);
-	/*
-    m_ipaddr = inet_addr(pszHostIP);
-    if (m_ipaddr == INADDR_NONE) {
-		// ASSERT(g_nInit > 0);
-		LPHOSTENT pHost = gethostbyname( pszHostIP );
-		if (pHost == NULL || pHost->h_addrtype != AF_INET || pHost->h_addr_list[0] == 0) {
-			// TRACE1("bad IP or unknown host: %s\n", pszHostIP);
-			return FALSE;
-		}
-		m_ipaddr = *(u_long *) pHost->h_addr_list[0];
-    }
-	*/
 	return TRUE;
 }
 
@@ -105,7 +93,7 @@ BOOL CPing::SendEcho()
         return FALSE;
     }    
 
-    dwReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(szSendData);
+    dwReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(szSendData) + 8;
     pReplyBuffer = (VOID*) malloc(dwReplySize);
     if (pReplyBuffer == NULL) {
         // TRACE0("\tUnable to allocate memory\n");
@@ -117,25 +105,27 @@ BOOL CPing::SendEcho()
     dwRetVal = IcmpSendEcho(hIcmpFile, m_ipaddr, szSendData, sizeof(szSendData), 
         NULL, pReplyBuffer, dwReplySize, 1000);
     if (dwRetVal != 0) {
-    //    PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)pReplyBuffer;
-    //    struct in_addr iaReply;
-    //    iaReply.S_un.S_addr = pEchoReply->Address;
-    //    printf("\tSent icmp message to %s\n", argv[1]);
-    //    if (dwRetVal > 1) {
-    //        printf("\tReceived %ld icmp message responses\n", dwRetVal);
-    //        printf("\tInformation from the first response:\n"); 
-    //    }    
-    //    else {    
-    //        printf("\tReceived %ld icmp message response\n", dwRetVal);
-    //        printf("\tInformation from this response:\n"); 
-    //    }    
-    //    printf("\t  Received from %s\n", inet_ntoa( iaReply ) );
-    //    printf("\t  Status = %ld\n", pEchoReply->Status);
-    //    printf("\t  Roundtrip time = %ld milliseconds\n", pEchoReply->RoundTripTime);
+#ifdef DEBUG
+        PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)pReplyBuffer;
+        struct in_addr iaReply;
+        iaReply.S_un.S_addr = pEchoReply->Address;
+        TRACE1("Sent icmp message to %xh\n", m_ipaddr);
+        if (dwRetVal > 1) {
+			TRACE1("Received %d icmp message responses\n", dwRetVal);
+			TRACE0("Information from the first response:\n");
+        }    
+        else {    
+			TRACE1("Received %d icmp message response\n", dwRetVal);
+			TRACE0("Information from this response:\n");
+        }    
+		TRACE1("  Received from %S\n", inet_ntoa( iaReply ) );
+		TRACE1("  Status = %d\n", pEchoReply->Status);
+		TRACE1("  Roundtrip time = %d milliseconds\n", pEchoReply->RoundTripTime);
+#endif // DEBUG
     }
     else {
     //    printf("\tCall to IcmpSendEcho failed.\n");
-    //    printf("\tIcmpSendEcho returned error: %ld\n", GetLastError() );
+        TRACE1("IcmpSendEcho returned error: %ld\n", GetLastError() );
         bRet = FALSE;
     }
 	free( pReplyBuffer );
