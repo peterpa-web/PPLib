@@ -110,6 +110,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ThreadSocket.cpp" />
+    <ClCompile Include="Utf8File.cpp" />
     <ClCompile Include="WebSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +132,7 @@
     <ClInclude Include="SvcCntl.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ThreadSocket.h" />
+    <ClInclude Include="Utf8File.h" />
     <ClInclude Include="WebSocket.h" />
   </ItemGroup>
   <ItemGroup>
