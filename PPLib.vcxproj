@@ -94,6 +94,7 @@
     <ClCompile Include="EventLog.cpp" />
     <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="HttpClient.cpp" />
+    <ClCompile Include="JsonParser.cpp" />
     <ClCompile Include="Ping.cpp" />
     <ClCompile Include="registry.cpp" />
     <ClCompile Include="ServerSocket.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="EventLog.h" />
     <ClInclude Include="FileUtil.h" />
     <ClInclude Include="HttpClient.h" />
+    <ClInclude Include="JsonParser.h" />
     <ClInclude Include="Ping.h" />
     <ClInclude Include="registry.h" />
     <ClInclude Include="ServerSocket.h" />

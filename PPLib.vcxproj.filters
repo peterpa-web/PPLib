@@ -75,6 +75,9 @@
     <ClCompile Include="Utf8File.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="JsonParser.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventLog.h">
@@ -135,6 +138,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Utf8File.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonParser.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

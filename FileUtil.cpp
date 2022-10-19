@@ -75,12 +75,12 @@ void CFileUtil::CopyFileProgress(LPCTSTR lpSource, LPCTSTR lpDest)
 		statDest.m_mtime = statSource.m_mtime;
 		statDest.m_attribute = statSource.m_attribute;
 		CFile::SetStatus(lpDest, statDest);
-
 	}
 	catch (CException* pe)
 	{
 //		ASSERT(FALSE);
 		DeleteFile(strDestTmp);
+		m_llFileProgress = 0;
 		throw pe;
 	}
 }
