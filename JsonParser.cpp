@@ -140,9 +140,9 @@ bool CJsonParser::FinThread()
     DWORD dwResult;
     if (!GetExitCodeThread(m_pThread->m_hThread, &dwResult))
         return false;
-    m_pThread->Delete();
+    delete m_pThread;
     m_pThread = nullptr;
-    TRACE0("FinThread end\n");
+    TRACE1("FinThread end ret=%d\n", dwRes);
     return dwRes == 0;
 }
 
