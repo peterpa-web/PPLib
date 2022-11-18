@@ -1,7 +1,7 @@
 #pragma once
 class CDriveCheck
 {
-protected:
+public:
 	enum class Status {
 		Force = -2,
 		Unknown = -1,
@@ -12,7 +12,6 @@ protected:
 		Online
 	};
 
-public:
 	class CDriveInfo
 	{
 	public:
@@ -39,7 +38,7 @@ public:
 	//	void CheckActive();
 
 		CString m_strName;
-		CTime m_timeUpd;	// no re-check before this time; see IsCurrent()
+		CTime m_timeUpd;	// no re-check before this time; see GetValidSecs(), IsCurrent()
 	//	CTime m_timeActive;	// delayed active statusNext -> status
 		enum class Status m_status = Status::Unknown;
 		enum class Status m_statusNext = Status::Unknown;

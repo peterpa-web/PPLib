@@ -56,9 +56,6 @@ CString CDriveCheck::CDriveInfo::StatusMsg()
 		return _T("network is not alive.");
 	if (HasNoPing())
 		return _T("Server \"") + m_strName + _T("\" gives no ping response.");
-	//	driveInfoRes.WaitActive();
-	if (IsRunning())
-		return _T("");
 	return _T("Server \"") + m_strName + _T("\" is not running.");
 }
 
@@ -227,14 +224,16 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 		{
 			driveInfoSrv.SetStatus(Status::Running);
 			driveInfoRes = driveInfoSrv;
-			return _T("");	// ok
+			TRACE0("ping=ok\n");
+			return CString();	// ok
 		}
 		driveInfoSrv.SetStatus(Status::NoPing);	//  retry after 5 min
 		driveInfoRes = driveInfoSrv;
+		TRACE1("ping=%s\n", driveInfoRes.StatusMsg());
 		return driveInfoRes.StatusMsg();
 		//return _T("Server \"") + strSrv + _T("\" gives no ping response.");
 	}
-	return _T("");	// no net drive
+	return CString();	// no net drive
 }
 
 void CDriveCheck::RemoveDrive(const CString strPath)
