@@ -1,14 +1,18 @@
 #include "stdafx.h"
 #include "Ping.h"
 #include "SensAPI.h"	// IsNetworkAlive 
+#include "EventLog.h"
 
 #include "DriveCheck.h"
 
 #pragma comment( lib, "SensAPI" ) 
 
+CStringW CDriveCheck::CDriveInfo::s_strUser;
+CStringW CDriveCheck::CDriveInfo::s_strPasswd;
+CStringW CDriveCheck::CDriveInfo::s_strShareName;
+
 CDriveCheck::CDriveInfo::CDriveInfo()
 {
-//	m_timeActive = 
 	m_timeUpd = CTime::GetCurrentTime();
 }
 
@@ -16,7 +20,6 @@ CDriveCheck::CDriveInfo::CDriveInfo(const CString& strName)
 {
 	m_strName = strName;
 	m_strName.MakeLower();
-//	m_timeActive = 
 	m_timeUpd = CTime::GetCurrentTime();
 }
 
@@ -31,21 +34,125 @@ void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 {
 	int nSecs = 60;
 	if (stat == Status::NoPing)
-		nSecs = 300;
+		nSecs = 600;
 	TRACE3("CDriveInfo::SetStatus %d %s %ds\n", stat, (LPCTSTR)m_strName, nSecs);
 	if (stat == Status::Force && m_status < Status::Running)
 		return;
 
+	if (stat <= m_statusNext)
+		m_strNetStatus.Empty();
 	if (stat <= m_statusNext || CTime::GetCurrentTime() >= m_timeUpd)
 	{
-		m_status = stat;
-		TRACE1(" %s\n", (LPCTSTR)StatusMsg());
+		if (stat == Status::Running)
+		{
+			TRACE0("SetStatus running\n");
+			if (s_strShareName.Find(m_strName) >= 0)
+			{
+				if (NetConn())
+				{
+					TRACE0("SetStatus after NetConn\n");
+					CTimeSpan d(nSecs);
+					m_timeUpd = CTime::GetCurrentTime() + d;
+					m_status = stat;
+				}
+				else
+					TRACE1("SetStatus NetConn failed: %s\n", m_strNetStatus);
+			}
+			else
+				m_strNetStatus.Empty();
+		}
+		else
+		{
+			TRACE2("SetStatus st=%d upd time (n=%d)\n", stat, m_statusNext);
+			CTimeSpan d(nSecs);
+			m_timeUpd = CTime::GetCurrentTime() + d;
+			m_status = stat;
+		}
+		TRACE1(" stat=%s\n", (LPCTSTR)StatusMsg());
 	}
 	else
-		TRACE0(" delayed\n");
+	{
+		if (stat == Status::Online)
+		{
+			TRACE0("SetStatus online upd time\n");
+			CTimeSpan d(nSecs);
+			m_timeUpd = CTime::GetCurrentTime() + d;
+			m_status = stat;
+		}
+		else
+			TRACE2("SetStatus st=%d delayed (n=%d)\n", stat, m_statusNext);
+	}
 	m_statusNext = stat;
-	CTimeSpan d(nSecs);
-	m_timeUpd = CTime::GetCurrentTime() + d;
+}
+
+bool CDriveCheck::CDriveInfo::NetConn()
+{
+	if (m_strNetStatus == _T("ok"))
+		return true;
+
+	TRACE1("NetConn %s\n", s_strShareName);
+	NETRESOURCE netrc;
+	netrc.dwScope = RESOURCE_GLOBALNET;
+	netrc.dwType = RESOURCETYPE_DISK;
+	netrc.dwDisplayType = RESOURCEDISPLAYTYPE_GENERIC;
+	netrc.dwUsage = RESOURCEUSAGE_CONNECTABLE;
+	netrc.lpLocalName = NULL;
+	netrc.lpRemoteName = (LPTSTR)(LPCTSTR)s_strShareName;
+	netrc.lpProvider = NULL;
+
+	DWORD dwErr = NO_ERROR;
+
+	if (s_strUser.IsEmpty())
+		dwErr = WNetAddConnection2(&netrc, NULL, NULL, 0);
+	else
+		dwErr = WNetAddConnection2(&netrc, s_strPasswd, s_strUser, 0);
+
+	if (dwErr == NO_ERROR)
+	{
+		m_strNetStatus = _T("ok");
+		return true;
+	}
+	if (dwErr == ERROR_BAD_NET_NAME ||
+		dwErr == ERROR_BAD_NETPATH)
+	{
+		m_strNetStatus = _T("server ") + s_strShareName + _T(" not found");
+		TRACE1("No Connection to %s\n", s_strShareName);
+		return false;
+	}
+	if (dwErr == ERROR_SESSION_CREDENTIAL_CONFLICT)	// 1219
+	{
+		TRACE1("ERROR_SESSION_CREDENTIAL_CONFLICT %s\n", s_strShareName);
+		dwErr = WNetCancelConnection2(netrc.lpRemoteName, 0, TRUE);
+		m_strNetStatus = _T("server ") + s_strShareName + _T(" credential conflict");
+		if (dwErr == NO_ERROR)
+		{
+			TRACE0("CancelConn done\n");
+			return false;	// retry AddConn later
+		}
+		// else set status below
+	}
+	if (dwErr == ERROR_ALREADY_ASSIGNED)		// 85
+	{
+		m_strNetStatus = _T("server ") + s_strShareName + _T(" ERROR_ALREADY_ASSIGNED");
+		TRACE1("ERROR_ALREADY_ASSIGNED %s\n", s_strShareName);
+		return false;
+	}
+	if (dwErr == ERROR_IO_PENDING)	// 997
+	{
+		m_strNetStatus = _T("server ") + s_strShareName + _T(" ERROR_IO_PENDING");
+		TRACE1("ERROR_IO_PENDING %s\n", s_strShareName);
+		return false;
+		//		Sleep( 2000 );
+		//		dwErr = NO_ERROR;	// no retry
+	}
+	if (dwErr == ERROR_LOGON_FAILURE)	// 1326
+	{
+		m_strNetStatus = _T("server ") + s_strShareName + _T(" ERROR_LOGON_FAILURE");
+		TRACE1("ERROR_LOGON_FAILURE %s\n", s_strShareName);
+		return false;
+	}
+	m_strNetStatus = CEventLogException::GetLastErrorText(dwErr);
+	return false;
 }
 
 CString CDriveCheck::CDriveInfo::StatusMsg()
@@ -53,34 +160,14 @@ CString CDriveCheck::CDriveInfo::StatusMsg()
 	if (IsRunning())
 		return _T("");
 	if (HasNoNet())
-		return _T("network is not alive.");
+		return _T("Network is not alive.");
+	if (!m_strNetStatus.IsEmpty())
+		return m_strNetStatus;
 	if (HasNoPing())
-		return _T("Server \"") + m_strName + _T("\" gives no ping response.");
+//		return _T("Server \"") + m_strName + _T("\" gives no ping response.");
+		return _T("Waiting for server \"") + m_strName + _T("\".");
 	return _T("Server \"") + m_strName + _T("\" is not running.");
 }
-
-/*
-void CDriveCheck::CDriveInfo::CheckActive()
-{
-	if (m_status != m_statusNext && m_timeActive <= CTime::GetCurrentTime() )
-	{
-		TRACE2("CDriveInfo::CheckActive %d -> %d\n", m_status, m_statusNext);
-		m_status = m_statusNext;
-	}
-}
-
-void CDriveCheck::CDriveInfo::WaitActive()
-{
-	if (m_status != m_statusNext && m_timeActive > CTime::GetCurrentTime() )
-	{
-		CTimeSpan ts(m_timeActive- CTime::GetCurrentTime());
-		TRACE2("CDriveInfo::WaitActive %s for %ds\n", m_strName, ts.GetSeconds());
-		TRACE2(" status %d -> %d\n", m_status, m_statusNext);
-		Sleep(ts.GetSeconds() * 1000);
-		m_status = m_statusNext;
-	}
-}
-*/
 
 
 CDriveCheck::CDriveInfo& CDriveCheck::GetNetDriveInfo(CString strSrv)
@@ -118,40 +205,45 @@ CString CDriveCheck::CheckParentPath(const CString& strPath, bool bForce)
 }
 
 
-CString CDriveCheck::CheckDirPath(const CString& strPath, bool bForce)
+CString CDriveCheck::CheckPath(const CString& strPath, bool bForce, bool bDir)
 {
-	TRACE1("CheckDirPath %s\n", strPath);
+	TRACE3("CheckPath %s f=%d d=%d\n", strPath, bForce, bDir);
 	CDriveInfo driveInfo;
 	if (bForce)
 		driveInfo.SetStatus(Status::Force);
 	CString strError = CheckRootPath(strPath, driveInfo);
 	if (!strError.IsEmpty())
 	{
-		TRACE1("CheckDirPath err=%s\n", strError);
+		TRACE1("CheckPath root err=%s\n", strError);
 		return strError;
 	}
 
 	CFileStatus fs;
-	if (!CFile::GetStatus(strPath, fs) ||
-		(fs.m_attribute & CFile::directory) == 0)
+	if (CFile::GetStatus(strPath, fs))
+	{
+		if (bDir && (fs.m_attribute & CFile::directory) == 0)
+			return _T("File \"") + strPath + _T("\" is not a folder.");
+		if (!driveInfo.IsUnknown())
+			driveInfo.SetStatus(Status::Online);
+	}
+	else
 	{
 		if (!driveInfo.IsUnknown())
 		{
 			if (driveInfo.IsOnline())
-				strError = _T("Folder \"") + strPath + _T("\" doesn't exist!");
+				strError = _T("Path \"") + strPath + _T("\" doesn't exist!");
 			else
-				strError = _T("(Folder \"") + strPath + _T("\" temporary not available.)");
+				strError = _T("(Path \"") + strPath + _T("\" temporary not available.)");
 		}
 		else
 		{
-			strError = _T("Folder \"") + strPath + _T("\" not found.");
-			RemoveDrive(strPath);
+			strError = _T("Path \"") + strPath + _T("\" not found.");
+			if (bDir)
+				RemoveDrive(strPath);
 		}
 		return strError;
 	}
-	if (!driveInfo.IsUnknown())
-		driveInfo.SetStatus(Status::Online);
-	TRACE1("CheckDirPath err=%s\n", strError);
+	TRACE1("CheckPath err=%s\n", strError);
 	return strError;
 }
 
@@ -225,15 +317,14 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 			driveInfoSrv.SetStatus(Status::Running);
 			driveInfoRes = driveInfoSrv;
 			TRACE0("ping=ok\n");
-			return CString();	// ok
+			return driveInfoRes.StatusMsg();
 		}
-		driveInfoSrv.SetStatus(Status::NoPing);	//  retry after 5 min
+		driveInfoSrv.SetStatus(Status::NoPing);	//  retry after 10 min
 		driveInfoRes = driveInfoSrv;
 		TRACE1("ping=%s\n", driveInfoRes.StatusMsg());
 		return driveInfoRes.StatusMsg();
-		//return _T("Server \"") + strSrv + _T("\" gives no ping response.");
 	}
-	return CString();	// no net drive
+	return CString();	// ok: no net drive
 }
 
 void CDriveCheck::RemoveDrive(const CString strPath)

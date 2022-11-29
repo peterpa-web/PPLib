@@ -21,32 +21,34 @@ public:
 		bool IsCurrent();
 		bool IsForce() { return m_status == Status::Force; }
 		bool IsUnknown() { return m_status == Status::Unknown; }
-	//	bool IsUnknown() { CheckActive(); return m_status == Status::Unknown; }
 		//bool IsOffline() { return m_status == Offline; }
 		bool HasNoNet() { return m_status == Status::NoNet; }
 		bool HasNoPing() { return m_status == Status::NoPing; }
 		bool IsRunning() { return m_status >= Status::Running; }
-//		bool IsRunning() { CheckActive(); return m_status >= Status::Running; }
 		bool IsOnline() { return m_status == Status::Online; }
-//		bool IsOnline() { CheckActive(); return m_status == Status::Online; }
 		void SetStatus(enum class Status stat);
 		LONG GetValidSecs() { CTimeSpan ts(m_timeUpd - CTime::GetCurrentTime()); return (LONG)ts.GetTotalSeconds(); }
-	//	void WaitActive();
+		bool NetConn();
 		CString StatusMsg();
+
+		static CStringW s_strUser;
+		static CStringW s_strPasswd;
+		static CStringW s_strShareName;
 
 	protected:
 	//	void CheckActive();
 
 		CString m_strName;
 		CTime m_timeUpd;	// no re-check before this time; see GetValidSecs(), IsCurrent()
-	//	CTime m_timeActive;	// delayed active statusNext -> status
+		CString m_strNetStatus;
 		enum class Status m_status = Status::Unknown;
 		enum class Status m_statusNext = Status::Unknown;
 	};
 
 	void Reset();
 	CString CheckParentPath(const CString& strPath, bool bForce = false); // returns error msg
-	CString CheckDirPath(const CString& strPath, bool bForce = false); // returns error msg
+	CString CheckPath(const CString& strPath, bool bForce = false, bool bDir = false); // returns error msg
+	CString CheckDirPath(const CString& strPath, bool bForce = false) { return CheckPath(strPath, bForce, true); }
 	CString CheckRootPath(const CString& strPath); // returns error msg
 	CString CheckRootPath(const CString& strPath, CDriveInfo &driveInfoRes);
 	void RemoveDrive(const CString strPath);
