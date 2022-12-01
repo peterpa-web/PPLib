@@ -165,7 +165,7 @@ CString CDriveCheck::CDriveInfo::StatusMsg()
 		return m_strNetStatus;
 	if (HasNoPing())
 //		return _T("Server \"") + m_strName + _T("\" gives no ping response.");
-		return _T("Waiting for server \"") + m_strName + _T("\".");
+		return _T("(Waiting for server \"") + m_strName + _T("\".)");
 	return _T("Server \"") + m_strName + _T("\" is not running.");
 }
 
