@@ -35,6 +35,7 @@ void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 	int nSecs = 60;
 	if (stat == Status::NoPing)
 		nSecs = 600;
+	CTimeSpan d(nSecs);
 	TRACE3("CDriveInfo::SetStatus %d %s %ds\n", stat, (LPCTSTR)m_strName, nSecs);
 	if (stat == Status::Force && m_status < Status::Running)
 		return;
@@ -51,7 +52,6 @@ void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 				if (NetConn())
 				{
 					TRACE0("SetStatus after NetConn\n");
-					CTimeSpan d(nSecs);
 					m_timeUpd = CTime::GetCurrentTime() + d;
 					m_status = stat;
 				}
@@ -59,12 +59,16 @@ void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 					TRACE1("SetStatus NetConn failed: %s\n", m_strNetStatus);
 			}
 			else
+			{
+				TRACE0("no NetConn\n");
 				m_strNetStatus.Empty();
+				m_timeUpd = CTime::GetCurrentTime() + d;
+				m_status = stat;
+			}
 		}
 		else
 		{
 			TRACE2("SetStatus st=%d upd time (n=%d)\n", stat, m_statusNext);
-			CTimeSpan d(nSecs);
 			m_timeUpd = CTime::GetCurrentTime() + d;
 			m_status = stat;
 		}
