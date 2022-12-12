@@ -174,6 +174,8 @@ BOOL CWebSocket::SendShortText(const CString &strMsg)
 	nLen += 2;
 	CStringA strMsgRaw((char *)h, 2);
 	strMsgRaw += utf8Msg;
+	if (m_pSocket == nullptr)
+		return FALSE;
 	int nSent = m_pSocket->Send((LPCSTR)strMsgRaw, nLen, 0);
 	return nSent == nLen;
 }
