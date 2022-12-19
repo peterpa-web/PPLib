@@ -68,7 +68,9 @@ public:
 	CString CheckDirPath(const CString& strPath) { return CheckPath(strPath, true); }
 	CString CheckRootPath(const CString& strPath); // returns error msg
 	CString CheckRootPath(const CString& strPath, CDriveInfo &driveInfoRes);
-	void InitDrives() { m_dwDrives = 0; m_listDriveInfo.RemoveAll(); }
+//	void InitDrives() { 
+//		m_dwDrives = 0; m_listDriveInfo.RemoveAll(); 
+//	}
 	void SetWakeLanData(const CStringW& strShareName, const CStringA& strWakeNetAddr, unsigned int mac[6]) {
 		GetNetDriveInfo(strShareName).SetWakeLanData(strWakeNetAddr, mac);
 	}

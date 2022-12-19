@@ -70,13 +70,12 @@ bool CDriveCheck::CDriveInfo::WakeLan()
 		for (int i = 0; i < 6; ++i)
 			*p++ = (unsigned char)m_mac[i];
 	}
-	{
-		CUdpSocket sockSend;
-		BOOL b = sockSend.Create(m_strWakeNetAddr, MAGICPORT, AF_UNSPEC, SOCK_DGRAM, IPPROTO_UDP);
-		if (b)
-			sockSend.SendTo(buf, 6 + 16 * 6, 0);
-		sockSend.Close();
-	}
+
+	CUdpSocket sockSend;
+	BOOL b = sockSend.Create(m_strWakeNetAddr, MAGICPORT, AF_UNSPEC, SOCK_DGRAM, IPPROTO_UDP);
+	if (b)
+		sockSend.SendTo(buf, 6 + 16 * 6, 0);
+	sockSend.Close();
 	return true;
 }
 
@@ -174,6 +173,11 @@ CString CDriveCheck::CDriveInfo::StatusMsg()
 
 CDriveCheck::CDriveInfo& CDriveCheck::GetNetDriveInfo(CString strSrv)
 {
+	if (strSrv.Left(2) == _T("\\\\"))
+	{
+		int iStart = 2;
+		strSrv = strSrv.Tokenize(_T("\\"), iStart);
+	}
 	strSrv.MakeLower();
 	POSITION pos = m_listDriveInfo.GetHeadPosition();
 	while (pos)
@@ -316,6 +320,8 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 		{
 			if (driveInfoSrv.WakeLan())
 				driveInfoSrv.SetStartTime();
+			else
+				TRACE0("WakeLan false\n");
 			driveInfoSrv.SetStatus(Status::NoPing);
 			driveInfoRes = driveInfoSrv;
 			TRACE1("ping=%s\n", driveInfoRes.StatusMsg());
