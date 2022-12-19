@@ -10,9 +10,9 @@
 
 CDriveCheck::CDriveInfo::CDriveInfo()
 {
-	m_timeUpd = CTime::GetCurrentTime();
-	CTimeSpan d(600);
-	m_timeStart = m_timeUpd - d;
+//	m_timeUpd = CTime::GetCurrentTime();
+//	CTimeSpan d(600);
+//	m_timeStart = m_timeUpd - d;
 }
 
 CDriveCheck::CDriveInfo::CDriveInfo(const CString& strName)
@@ -45,7 +45,8 @@ void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 
 //	if (stat > Status::Reset)
 //		ASSERT(CTime::GetCurrentTime() >= m_timeUpd);
-	m_strNetStatus.Empty();
+	if (stat != Status::Connecting)
+		m_strNetStatus.Empty();
 	m_timeUpd = CTime::GetCurrentTime() + d;
 	m_status = stat;
 }
@@ -118,13 +119,14 @@ bool CDriveCheck::CDriveInfo::NetConn()
 	if (dwErr == ERROR_SESSION_CREDENTIAL_CONFLICT)	// 1219
 	{
 		TRACE1("ERROR_SESSION_CREDENTIAL_CONFLICT %s\n", m_strShareName);
-		dwErr = WNetCancelConnection2(netrc.lpRemoteName, 0, TRUE);
+//		dwErr = WNetCancelConnection2(netrc.lpRemoteName, 0, TRUE);
 		m_strNetStatus = _T("server ") + m_strShareName + _T(" credential conflict");
-		if (dwErr == NO_ERROR)
-		{
-			TRACE0("CancelConn done\n");
-			return false;	// retry AddConn later
-		}
+		return false;
+//		if (dwErr == NO_ERROR)
+//		{
+//			TRACE0("CancelConn done\n");
+//			return false;	// retry AddConn later
+//		}
 		// else set status below
 	}
 	if (dwErr == ERROR_ALREADY_ASSIGNED)		// 85
@@ -230,24 +232,13 @@ CString CDriveCheck::CheckPath(const CString& strPath, bool bDir)
 	{
 		if (bDir && (fs.m_attribute & CFile::directory) == 0)
 			return _T("File \"") + strPath + _T("\" is not a folder.");
-		if (!driveInfo.IsUnknown())
-			driveInfo.SetStatus(Status::Online);
+		driveInfo.SetStatus(Status::Online);
 	}
 	else
 	{
-		if (!driveInfo.IsUnknown())
-		{
-			if (driveInfo.IsOnline())
-				strError = _T("Path \"") + strPath + _T("\" doesn't exist!");
-			else
-				strError = _T("(Path \"") + strPath + _T("\" temporary not available.)");
-		}
-		else
-		{
-			strError = _T("Path \"") + strPath + _T("\" not found.");
-			if (bDir)
-				ResetPath(strPath);
-		}
+		strError = _T("Path \"") + strPath + _T("\" not found.");
+		if (bDir)
+			ResetPath(strPath);
 		return strError;
 	}
 	TRACE1("CheckPath err=%s\n", strError);
