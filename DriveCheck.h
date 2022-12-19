@@ -8,8 +8,8 @@ public:
 		Offline = 0,
 		NoNet,
 		NoPing,
-		Starting,
 		Connecting,
+		Starting,
 		Running,
 		Online
 	};
@@ -23,7 +23,7 @@ public:
 		void SetWakeLanData(const CStringA& strWakeNetAddr, unsigned int mac[6]);
 		void SetConnData(const CStringW& strShareName, const CStringW& strUser, const CStringW& strPasswd) {
 			if (strShareName.Find(m_strName) >= 0)
-				m_strShareName = m_strShareName; m_strUser = strUser; m_strPasswd = strPasswd;
+				m_strShareName = strShareName; m_strUser = strUser; m_strPasswd = strPasswd;
 		}
 		void SetStatus(enum class Status stat);
 		bool IsCurrent() { return m_timeUpd > CTime::GetCurrentTime(); }
@@ -41,7 +41,7 @@ public:
 		}
 		bool IsStarted() { 
 			CTimeSpan ts(CTime::GetCurrentTime() - m_timeStart);
-			return ts.GetTotalSeconds() > 600;	// 10min
+			return ts.GetTotalSeconds() >= 600;	// 10min
 		}
 		bool NetConn();
 		CString StatusMsg();
@@ -50,7 +50,7 @@ public:
 		CString m_strName;
 		CTime m_timeStart;
 		CTime m_timeUpd;	// no re-check before this time; see GetValidSecs(), IsCurrent()
-		CString m_strNetStatus;
+		CString m_strNetConnStatus;
 		enum class Status m_status = Status::Unknown;
 
 		CStringA m_strWakeNetAddr;
