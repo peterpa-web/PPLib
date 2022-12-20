@@ -332,7 +332,7 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 		{
 			driveInfoSrv.SetStatus(Status::Starting);	//  retry after 10 min
 			driveInfoRes = driveInfoSrv;
-			TRACE1("stat=%s\n", driveInfoRes.StatusMsg());
+			TRACE1("conn=%s\n", driveInfoRes.StatusMsg());
 			return driveInfoRes.StatusMsg();
 		}
 		driveInfoSrv.SetStatus(Status::Running);
