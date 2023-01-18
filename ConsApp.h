@@ -2,17 +2,20 @@
 //
 #pragma once
 
-int _tmain( int argc, _TCHAR *argv[] );
+// _tmain must be in the main module:
+#define	CONS_MAIN int _tmain(int argc, _TCHAR *argv[]) { return ConsMain(argc, argv); }
+
+int ConsMain( int argc, _TCHAR *argv[] );
 
 /////////////////////////////////////////////////////////////////////////////
 
 class CConsApp
 {
-	static CConsApp* m_pApp;
-	friend int ::_tmain( int argc, _TCHAR *argv[] );
+	static CConsApp* s_pApp;
+	friend int ::ConsMain( int argc, _TCHAR *argv[] );
 
 protected:
-	static CConsApp* GetThis() { ASSERT( m_pApp ); return m_pApp; }
+	static CConsApp* GetThis() { ASSERT( s_pApp ); return s_pApp; }
 
 	virtual void Init();
 	virtual int main( int argc, TCHAR *argv[] ) = 0;

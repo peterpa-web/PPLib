@@ -2,17 +2,17 @@
 //
 
 #include "stdafx.h"
-#include "EventLog.h"
+//#include "EventLog.h"
 #include "ConsApp.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // global
 
-CWinApp theWinApp;
+//CWinApp theWinApp;
 
-CConsApp* CConsApp::m_pApp = NULL;	// static init
+CConsApp* CConsApp::s_pApp = NULL;	// static init
 
-int _tmain( int argc, _TCHAR *argv[] )
+int ConsMain( int argc, _TCHAR *argv[] )
 {
 
 	CConsApp* pApp = CConsApp::GetThis();
@@ -24,7 +24,7 @@ int _tmain( int argc, _TCHAR *argv[] )
 	catch ( CException *pe )
 	{
 		pApp->WriteError( pe );
-		CEventLog::Write( pe );
+//		CEventLog::Write( pe );
 		pe->Delete();
 		return 1;
 	}
@@ -36,8 +36,8 @@ int _tmain( int argc, _TCHAR *argv[] )
 
 CConsApp::CConsApp()
 {
-	ASSERT( m_pApp == NULL );
-	m_pApp = this;
+	ASSERT( s_pApp == NULL );
+	s_pApp = this;
 }
 
 void CConsApp::Init()
@@ -49,7 +49,9 @@ void CConsApp::Init()
 	// initialize MFC
 	if (!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0))
 	{
-		throw new CEventLogException( _T("MFC initialization failed") );
+//        throw new CEventLogException( _T("MFC initialization failed") );
+		_ftprintf(stderr, _T("MFC initialization failed\n"));
+		AfxThrowUserException();
 	}
 }
 
