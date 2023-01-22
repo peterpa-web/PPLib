@@ -22,6 +22,7 @@ protected:
 
 public:
 	CConsApp();
+	virtual ~CConsApp() {}
 
 	static CString GetModuleFileName();
 	static CString GetDefaultFileName( LPCTSTR pszExt );
