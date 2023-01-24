@@ -28,25 +28,25 @@ public:
 	POSITION InsertSorted(ARG_TYPE item)
 	{
 		ASSERT(dynamic_cast<const CSortedItem*>(&item) != NULL);
-		POSITION pos = GetTailPosition();
+		POSITION pos = CList<TYPE, ARG_TYPE>::GetTailPosition();
 		while (pos != NULL)
 		{
-			ARG_TYPE obj = GetAt(pos);
+			ARG_TYPE obj = CList<TYPE, ARG_TYPE>::GetAt(pos);
 			int c = obj.Compare(item);
 			if (c == 0)
 				return NULL;	// already present
 			if (c < 0)
 				break;
-			GetPrev(pos);
+			CList<TYPE, ARG_TYPE>::GetPrev(pos);
 		}
-		return pos == NULL ? AddHead(item) : InsertAfter(pos, item);
+		return pos == NULL ? CList<TYPE, ARG_TYPE>::AddHead(item) : CList<TYPE, ARG_TYPE>::InsertAfter(pos, item);
 	}
 
 	POSITION FindIndex(INT_PTR nIndex, INT_PTR n, POSITION pos) const
 	{
 		while (n < nIndex)
 		{
-			GetNext(pos);
+			CList<TYPE, ARG_TYPE>::GetNext(pos);
 			n++;
 		}
 		return pos;
@@ -54,11 +54,11 @@ public:
 
 	POSITION FindSequential(ARG_TYPE item) const
 	{
-		POSITION pos = GetHeadPosition();
+		POSITION pos = CList<TYPE, ARG_TYPE>::GetHeadPosition();
 		while (pos != NULL)
 		{
 			POSITION p = pos;
-			if (GetNext(pos).Compare(item) == 0)
+			if (CList<TYPE, ARG_TYPE>::GetNext(pos).Compare(item) == 0)
 				return p;
 		}
 		return NULL;
@@ -66,8 +66,8 @@ public:
 
 	POSITION FindSorted(ARG_TYPE item) const
 	{
-		int nEnd = GetCount();
-		return FindSorted(item, 0, GetHeadPosition(), nEnd);
+		int nEnd = CList<TYPE, ARG_TYPE>::GetCount();
+		return FindSorted(item, 0, CList<TYPE, ARG_TYPE>::GetHeadPosition(), nEnd);
 	}
 
 	POSITION FindSorted(ARG_TYPE item, INT_PTR nStart, POSITION posStart, INT_PTR nEnd) const
@@ -77,7 +77,7 @@ public:
 
 		if ((nEnd - nStart) < 2)
 		{
-			ARG_TYPE obj = GetAt(posStart);
+			ARG_TYPE obj = CList<TYPE, ARG_TYPE>::GetAt(posStart);
 			if (obj.Compare(item) == 0)
 				return posStart;
 			return NULL;
@@ -86,7 +86,7 @@ public:
 		POSITION posMid = FindIndex(nMid, nStart, posStart);
 		if (posMid == NULL)
 			return NULL;
-		ARG_TYPE obj = GetAt(posMid);
+		ARG_TYPE obj = CList<TYPE, ARG_TYPE>::GetAt(posMid);
 		int c = obj.Compare(item);
 		if (c == 0)
 			return posMid;
@@ -100,22 +100,22 @@ public:
 	{
 		if (posStart == NULL && posList == NULL)
 		{
-			posStart = GetHeadPosition();
+			posStart = CList<TYPE, ARG_TYPE>::GetHeadPosition();
 			posList = list.GetHeadPosition();
 		}
 		else
 		{
-			GetNext(posStart);
+			CList<TYPE, ARG_TYPE>::GetNext(posStart);
 			list.GetNext(posList);
 		}
 
 		while (posStart != NULL && posList != NULL)
 		{
-			int c = GetAt(posStart).Compare(list.GetAt(posList));
+			int c = CList<TYPE, ARG_TYPE>::GetAt(posStart).Compare(list.GetAt(posList));
 			if (c == 0)
 				return posStart;
 			if (c < 0)
-				GetNext(posStart);
+				CList<TYPE, ARG_TYPE>::GetNext(posStart);
 			else
 				list.GetNext(posList);
 		}
