@@ -26,7 +26,7 @@ public:
 				m_strShareName = strShareName; m_strUser = strUser; m_strPasswd = strPasswd;
 		}
 		void SetStatus(enum class Status stat);
-		bool IsCurrent() { return m_timeUpd > CTime::GetCurrentTime(); }
+		bool IsCurrent() { return m_status >= Status::Offline && m_timeUpd > CTime::GetCurrentTime(); }
 		bool IsUnknown() { return m_status == Status::Unknown; }
 		bool HasNoNet() { return m_status == Status::NoNet; }
 		bool HasNoPing() { return m_status == Status::NoPing; }

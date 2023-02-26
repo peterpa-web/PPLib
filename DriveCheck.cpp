@@ -239,7 +239,6 @@ CString CDriveCheck::CheckPath(const CString& strPath, bool bDir)
 		strError = _T("Path \"") + strPath + _T("\" not found.");
 		if (bDir)
 			ResetPath(strPath);
-		return strError;
 	}
 	TRACE1("CheckPath err=%s\n", strError);
 	return strError;
