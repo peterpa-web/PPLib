@@ -112,7 +112,7 @@ bool CDriveCheck::CDriveInfo::NetConn()
 	if (dwErr == ERROR_BAD_NET_NAME || dwErr == ERROR_NETWORK_UNREACHABLE ||
 		dwErr == ERROR_BAD_NETPATH)
 	{
-		m_strNetConnStatus = _T("no connection to server ") + m_strShareName;
+		m_strNetConnStatus = _T("Error: no connection to server ") + m_strShareName;
 		TRACE1("No Connection to %s\n", m_strShareName);
 		return false;
 	}
