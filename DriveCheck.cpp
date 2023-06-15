@@ -109,25 +109,29 @@ bool CDriveCheck::CDriveInfo::NetConn()
 		m_strNetConnStatus = _T("ok");
 		return true;
 	}
-	if (dwErr == ERROR_BAD_NET_NAME || dwErr == ERROR_NETWORK_UNREACHABLE ||
-		dwErr == ERROR_BAD_NETPATH)
+	if (dwErr == ERROR_BAD_NET_NAME)
 	{
-		m_strNetConnStatus = _T("Error: no connection to server ") + m_strShareName;
-		TRACE1("No Connection to %s\n", m_strShareName);
+		m_strNetConnStatus = _T("bad net name for ") + m_strShareName;
+		TRACE1("%s\n", m_strNetConnStatus);
+		return false;
+	}
+	if (dwErr == ERROR_NETWORK_UNREACHABLE)
+	{
+		m_strNetConnStatus = _T("net unreachable for ") + m_strShareName;
+		TRACE1("%s\n", m_strNetConnStatus);
+		return false;
+	}
+	if (dwErr == ERROR_BAD_NETPATH)
+	{
+		m_strNetConnStatus = _T("bad net path for ") + m_strShareName;
+		TRACE1("%s\n", m_strNetConnStatus);
 		return false;
 	}
 	if (dwErr == ERROR_SESSION_CREDENTIAL_CONFLICT)	// 1219
 	{
 		TRACE1("ERROR_SESSION_CREDENTIAL_CONFLICT %s\n", m_strShareName);
-//		dwErr = WNetCancelConnection2(netrc.lpRemoteName, 0, TRUE);
 		m_strNetConnStatus = _T("Error: ") + m_strShareName + _T(" credential conflict: please re-login");
 		return false;
-//		if (dwErr == NO_ERROR)
-//		{
-//			TRACE0("CancelConn done\n");
-//			return false;	// retry AddConn later
-//		}
-		// else set status below
 	}
 	if (dwErr == ERROR_ALREADY_ASSIGNED)		// 85
 	{
