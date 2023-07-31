@@ -19,7 +19,7 @@ public:
 	};
 
 protected:
-	CThreadSocket *m_pSocket;
+	CThreadSocket *m_pSocket = nullptr;
 
 	DWORD HashSHA1(const CStringA &strKey, BYTE *rgbHash);
 	CStringA Base64(const BYTE *rgbHash);

@@ -126,6 +126,7 @@ void CWebSocket::RecLoop(CWnd *pWndTarget, UINT nMsg)
                 CString str = m_pSocket->GetLastError(iRc, 4);
                 TRACE1("CWebSocket::RecLoop mask %s\n", str);
 				m_pSocket->Close();
+				m_pSocket = nullptr;
 				break;
 			}
 		}
