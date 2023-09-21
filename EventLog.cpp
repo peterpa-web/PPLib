@@ -243,7 +243,7 @@ BOOL CEventLog::Write(
 		wType,			// event type to log 
 		wCategory,		// event category 
 		dwEventID,		// event identifier 
-		3,				// number of strings to merge with message  
+		1,				// number of strings to merge with message  
 		0,				// size of binary data, in bytes
 		lpStrings,		// array of strings to merge with message 
 		NULL );			// address of binary data 

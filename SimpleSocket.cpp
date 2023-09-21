@@ -366,7 +366,7 @@ int CTcpSocket::ReceiveHeader( CArray<CStringA>& arrLines, LPCSTR pszVersion /* 
 	int start = 0;
 	if ( bVerified )
 	{
-//		TRACE1( "ReceiveHeader str=%s\n", str );
+		// TRACE1( "ReceiveHeader str=%S\n", str );
 		int pos = str.Find( "\r\n", start );
 		while( pos > start )
 		{
@@ -379,7 +379,7 @@ int CTcpSocket::ReceiveHeader( CArray<CStringA>& arrLines, LPCSTR pszVersion /* 
 			start += 2;		// skip crlf
 	}
 	m_strExtra = str.Mid( start );
-//	TRACE1( "CSimpleSocket::ReceiveHdr ret=%d\n", iRc );
+	// TRACE1( "CSimpleSocket::ReceiveHdr ret=%d\n", iRc );
 	return ( iRc );
 }
 

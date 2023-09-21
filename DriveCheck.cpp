@@ -153,7 +153,13 @@ bool CDriveCheck::CDriveInfo::NetConn()
 		TRACE1("ERROR_LOGON_FAILURE %s\n", m_strShareName);
 		return false;
 	}
-	m_strNetConnStatus = CEventLogException::GetLastErrorText(dwErr);
+	if (dwErr == ERROR_SEM_TIMEOUT)	// 121
+	{
+		m_strNetConnStatus = _T("server ") + m_strShareName + _T(" ERROR_SEM_TIMEOUT");
+		TRACE1("ERROR_SEM_TIMEOUT %s\n", m_strShareName);
+		return false;
+	}
+	m_strNetConnStatus = CEventLogException::GetLastErrorText(dwErr) + _T(" on ") + m_strShareName;
 	return false;
 }
 
