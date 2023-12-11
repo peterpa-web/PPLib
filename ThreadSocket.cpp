@@ -15,8 +15,6 @@
 CThreadSocket::CThreadSocket()
 {
 	m_bAutoDelete = FALSE;
-	m_bStop = FALSE;
-	m_nConn = -1;
 }
 
 CThreadSocket::~CThreadSocket()

@@ -36,9 +36,9 @@ public:
 	int SendHTTP( CStringA str, int nStatus = 200, LPCSTR pszType="text/html" );
 
 protected:
-	int	m_nConn;
-	BOOL m_bStop;
-	BOOL m_bKeepAlive;
+	int	m_nConn = -1;
+	BOOL m_bStop = FALSE;
+	BOOL m_bKeepAlive = FALSE;
 
 };
 
