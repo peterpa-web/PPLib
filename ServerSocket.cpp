@@ -146,6 +146,7 @@ CThreadSocket* CServerSocket::TerminateThreadSockets()
 
 BOOL CServerSocket::BeginThread(int nPort)
 {
+	TRACE1("CServerSocket::BeginThread nPort=%d\n", nPort);
 	if (!Create(nPort)) {
 		TRACE0("CServerSocket::BeginThread Create failed\n");
 		return FALSE;

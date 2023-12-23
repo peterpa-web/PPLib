@@ -135,3 +135,49 @@ int CStringUtil::CompareGerNoCase(LPCWSTR pszA, LPCWSTR pszB)
 	} while (a0 == b0 && a0 != 0);
 	return 0;
 }
+
+int CStringUtil::Hex2dec(const char* pHex)
+{
+	int nRes = 0;
+	int n = sscanf_s(pHex, "%2x", &nRes);
+	if (n != 1)
+		return -1;	// error
+	return nRes;
+}
+
+// see https://stackoverflow.com/questions/18307429/encode-decode-url-in-c
+CStringA CStringUtil::UriDecode(const CStringA& strUri)
+{
+	const char* pSrc = (const char*)strUri;
+	const int nLen = strUri.GetLength();
+	const char* const pSrcEnd = pSrc + nLen;
+	// last decodable '%' 
+	const char* const pStrEndDec = pSrcEnd - 2;
+
+	CStringA strRes;
+	BYTE* pStart = (BYTE*)strRes.GetBufferSetLength(nLen);
+	BYTE* pEnd = pStart;
+
+	while (pSrc < pStrEndDec)
+	{
+		if (*pSrc == '%')
+		{
+			BYTE dec = Hex2dec(pSrc + 1);
+			if (dec >= 0)
+			{
+				*pEnd++ = dec;
+				pSrc += 3;
+				continue;
+			}
+		}
+
+		*pEnd++ = (BYTE)*pSrc++;
+	}
+
+	// the last 2- chars
+	while (pSrc < pSrcEnd)
+		*pEnd++ = (BYTE)*pSrc++;
+
+	strRes.ReleaseBuffer(pEnd - pStart);
+	return strRes;
+}

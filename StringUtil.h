@@ -7,5 +7,7 @@ public:
 	static BOOL ReadStringA(CStdioFile& f, CStringA& rString);
 	static int CompareGer(LPCWSTR pszA, LPCWSTR pszB);
 	static int CompareGerNoCase(LPCWSTR pszA, LPCWSTR pszB);
+	static int Hex2dec(const char* pHex);
+	static CStringA UriDecode(const CStringA& strUri);
 };
 
