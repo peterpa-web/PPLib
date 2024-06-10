@@ -84,6 +84,9 @@
     <ClCompile Include="DesktopToast.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="PortableDevicePP.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventLog.h">
@@ -156,6 +159,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="DesktopToast.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="PortableDevicePP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

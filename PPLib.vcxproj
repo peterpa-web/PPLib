@@ -98,6 +98,7 @@
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="JsonParser.cpp" />
     <ClCompile Include="Ping.cpp" />
+    <ClCompile Include="PortableDevicePP.cpp" />
     <ClCompile Include="registry.cpp" />
     <ClCompile Include="ServerSocket.cpp" />
     <ClCompile Include="ServiceApp.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="DriveCheck.h" />
     <ClInclude Include="EventLog.h" />
     <ClInclude Include="FileUtil.h" />
+    <ClInclude Include="PortableDevicePP.h" />
     <ClInclude Include="PtrOwnerList.h" />
     <ClInclude Include="HttpClient.h" />
     <ClInclude Include="JsonParser.h" />
