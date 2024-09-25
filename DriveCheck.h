@@ -41,7 +41,7 @@ public:
 		}
 		bool IsStarted() { 
 			CTimeSpan ts(CTime::GetCurrentTime() - m_timeStart);
-			return ts.GetTotalSeconds() >= 600;	// 10min
+			return ts.GetTotalSeconds() >= 120;	// 2min
 		}
 		bool NetConn();
 		CString StatusMsg();

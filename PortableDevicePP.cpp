@@ -756,6 +756,8 @@ void CPortableDevice::TransferContentToDevice(PCWSTR pszDirObjectID, const CStri
         // identifier on the device)
         if (SUCCEEDED(hr))
         {
+            TRACE1("CreateObjectWithPropertiesAndData szBuf=%d\n", cbOptimalTransferSize);
+
             hr = pTempStream->QueryInterface(IID_PPV_ARGS(&pFinalObjectDataStream));
             if (FAILED(hr))
                 throw new CPortableDeviceException(L"TransferContentToDevice: Failed to QueryInterface for IPortableDeviceDataStream.", hr);
@@ -785,6 +787,7 @@ void CPortableDevice::TransferContentToDevice(PCWSTR pszDirObjectID, const CStri
             hr = pFinalObjectDataStream->Commit(0);
             if (FAILED(hr))
                 throw new CPortableDeviceException(L"TransferContentToDevice: Failed to commit object to device.", hr);
+            TRACE0("Commit done\n");
         }
 
         // Some clients may want to know the object identifier of the newly created
