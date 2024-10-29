@@ -19,9 +19,9 @@ void CLoopThread::Cancel()
 
 void CLoopThread::Run()
 {
-	while (true)
+	m_bCanceled = false;
+	while (!m_bCanceled)
 	{
-		m_bCanceled = false;
 		bool bTimeout = false;
 		if (!m_sync.Wait(10000, &bTimeout))
 		{
