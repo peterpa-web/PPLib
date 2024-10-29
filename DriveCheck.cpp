@@ -7,6 +7,7 @@
 #include "DriveCheck.h"
 
 #pragma comment( lib, "SensAPI" ) 
+#pragma comment( lib, "Mpr" ) 
 
 CDriveCheck::CDriveInfo::CDriveInfo()
 {

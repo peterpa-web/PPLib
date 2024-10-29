@@ -92,6 +92,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BaseThread.cpp" />
     <ClCompile Include="ConsApp.cpp" />
     <ClCompile Include="DesktopNotificationManagerCompat.cpp" />
     <ClCompile Include="DesktopToast.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="JsonParser.cpp" />
+    <ClCompile Include="LoopThread.cpp" />
     <ClCompile Include="Ping.cpp" />
     <ClCompile Include="PortableDevicePP.cpp" />
     <ClCompile Include="registry.cpp" />
@@ -116,17 +118,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SyncEvent.cpp" />
     <ClCompile Include="ThreadSocket.cpp" />
     <ClCompile Include="Utf8File.cpp" />
     <ClCompile Include="WebSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseThread.h" />
     <ClInclude Include="ConsApp.h" />
     <ClInclude Include="DesktopNotificationManagerCompat.h" />
     <ClInclude Include="DesktopToast.h" />
     <ClInclude Include="DriveCheck.h" />
     <ClInclude Include="EventLog.h" />
     <ClInclude Include="FileUtil.h" />
+    <ClInclude Include="LoopThread.h" />
     <ClInclude Include="PortableDevicePP.h" />
     <ClInclude Include="PtrOwnerList.h" />
     <ClInclude Include="HttpClient.h" />
@@ -143,6 +148,7 @@
     <ClInclude Include="StringUtil.h" />
     <ClInclude Include="SvcCntl.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SyncEvent.h" />
     <ClInclude Include="ThreadSocket.h" />
     <ClInclude Include="Utf8File.h" />
     <ClInclude Include="WebSocket.h" />

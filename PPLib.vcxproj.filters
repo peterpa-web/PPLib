@@ -87,6 +87,15 @@
     <ClCompile Include="PortableDevicePP.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="BaseThread.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="LoopThread.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="SyncEvent.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventLog.h">
@@ -162,6 +171,15 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="PortableDevicePP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseThread.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="LoopThread.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="SyncEvent.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
