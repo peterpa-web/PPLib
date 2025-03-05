@@ -36,7 +36,7 @@ void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 {
 	int nSecs = 60;
 	if (stat == Status::Starting)
-		nSecs = 600;	// 10m
+		nSecs = 180;	// 3m
 	else if (stat == Status::Online)
 		nSecs = 3600;	// 1h
 	else if (stat <= Status::Reset)
@@ -171,7 +171,12 @@ CString CDriveCheck::CDriveInfo::StatusMsg()
 	if (HasNoNet())
 		return _T("Network is not alive.");
 	if (HasNoPing())
-		return _T("(Server \"") + m_strName + _T("\" is not alive.)");
+	{
+		if (IsStarted())
+			return _T("Err Server \"") + m_strName + _T("\" is not alive.");
+		else
+			return _T("(Server \"") + m_strName + _T("\" is starting.)");
+	}
 	if (!m_strNetConnStatus.IsEmpty())
 		return m_strNetConnStatus;
 	if (IsStarting())
@@ -319,10 +324,13 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 //			bRetP = ping.SendEcho();	// retrying
 		if (!bRetP)
 		{
-			if (driveInfoSrv.WakeLan())
-				driveInfoSrv.SetStartTime();
-			else
-				TRACE0("WakeLan false\n");
+			if (driveInfoSrv.IsStartOutdated())
+			{
+				if (driveInfoSrv.WakeLan())
+					driveInfoSrv.SetStartTime();
+				else
+					TRACE0("WakeLan false\n");
+			}
 			driveInfoSrv.SetStatus(Status::NoPing);
 			driveInfoRes = driveInfoSrv;
 			TRACE1("ping=%s\n", driveInfoRes.StatusMsg());
@@ -340,7 +348,7 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 
 		if (!driveInfoSrv.IsStarted())
 		{
-			driveInfoSrv.SetStatus(Status::Starting);	//  retry after 10 min
+			driveInfoSrv.SetStatus(Status::Starting);	//  retry after 3 min
 			driveInfoRes = driveInfoSrv;
 			TRACE1("conn=%s\n", driveInfoRes.StatusMsg());
 			return driveInfoRes.StatusMsg();

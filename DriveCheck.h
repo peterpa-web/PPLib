@@ -44,6 +44,10 @@ public:
 			return ts.GetTotalSeconds() >= 120;	// 2min
 		}
 		bool NetConn();
+		bool IsStartOutdated() { 
+			CTimeSpan ts(CTime::GetCurrentTime() - m_timeStart);
+			return ts.GetTotalSeconds() >= 3590;	// 1h - 10s
+		}
 		CString StatusMsg();
 
 	protected:
