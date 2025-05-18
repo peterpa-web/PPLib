@@ -88,7 +88,7 @@ bool CDriveCheck::CDriveInfo::NetConn()
 	if (m_strNetConnStatus == _T("ok"))
 		return true;
 
-	TRACE1("NetConn %s\n", m_strShareName);
+	FTRACE1("NetConn %s\n", m_strShareName);
 	NETRESOURCE netrc;
 	netrc.dwScope = RESOURCE_GLOBALNET;
 	netrc.dwType = RESOURCETYPE_DISK;
@@ -113,37 +113,37 @@ bool CDriveCheck::CDriveInfo::NetConn()
 	if (dwErr == ERROR_BAD_NET_NAME)
 	{
 		m_strNetConnStatus = _T("bad net name for ") + m_strShareName;
-		TRACE1("%s\n", m_strNetConnStatus);
+		FTRACE1("%s\n", m_strNetConnStatus);
 		return false;
 	}
 	if (dwErr == ERROR_NETWORK_UNREACHABLE)
 	{
 		m_strNetConnStatus = _T("net unreachable for ") + m_strShareName;
-		TRACE1("%s\n", m_strNetConnStatus);
+		FTRACE1("%s\n", m_strNetConnStatus);
 		return false;
 	}
 	if (dwErr == ERROR_BAD_NETPATH)
 	{
 		m_strNetConnStatus = _T("bad net path for ") + m_strShareName;
-		TRACE1("%s\n", m_strNetConnStatus);
+		FTRACE1("%s\n", m_strNetConnStatus);
 		return false;
 	}
 	if (dwErr == ERROR_SESSION_CREDENTIAL_CONFLICT)	// 1219
 	{
-		TRACE1("ERROR_SESSION_CREDENTIAL_CONFLICT %s\n", m_strShareName);
+		FTRACE1("ERROR_SESSION_CREDENTIAL_CONFLICT %s\n", m_strShareName);
 		m_strNetConnStatus = _T("Error: ") + m_strShareName + _T(" credential conflict: please re-login");
 		return false;
 	}
 	if (dwErr == ERROR_ALREADY_ASSIGNED)		// 85
 	{
 		m_strNetConnStatus = _T("server ") + m_strShareName + _T(" ERROR_ALREADY_ASSIGNED");
-		TRACE1("ERROR_ALREADY_ASSIGNED %s\n", m_strShareName);
+		FTRACE1("ERROR_ALREADY_ASSIGNED %s\n", m_strShareName);
 		return false;
 	}
 	if (dwErr == ERROR_IO_PENDING)	// 997
 	{
 		m_strNetConnStatus = _T("server ") + m_strShareName + _T(" ERROR_IO_PENDING");
-		TRACE1("ERROR_IO_PENDING %s\n", m_strShareName);
+		FTRACE1("ERROR_IO_PENDING %s\n", m_strShareName);
 		return false;
 		//		Sleep( 2000 );
 		//		dwErr = NO_ERROR;	// no retry
@@ -151,13 +151,13 @@ bool CDriveCheck::CDriveInfo::NetConn()
 	if (dwErr == ERROR_LOGON_FAILURE)	// 1326
 	{
 		m_strNetConnStatus = _T("server ") + m_strShareName + _T(" ERROR_LOGON_FAILURE");
-		TRACE1("ERROR_LOGON_FAILURE %s\n", m_strShareName);
+		FTRACE1("ERROR_LOGON_FAILURE %s\n", m_strShareName);
 		return false;
 	}
 	if (dwErr == ERROR_SEM_TIMEOUT)	// 121
 	{
 		m_strNetConnStatus = _T("server ") + m_strShareName + _T(" ERROR_SEM_TIMEOUT");
-		TRACE1("ERROR_SEM_TIMEOUT %s\n", m_strShareName);
+		FTRACE1("ERROR_SEM_TIMEOUT %s\n", m_strShareName);
 		return false;
 	}
 	m_strNetConnStatus = CEventLogException::GetLastErrorText(dwErr) + _T(" on ") + m_strShareName;
@@ -298,7 +298,7 @@ CString CDriveCheck::CheckDrive(const CString& strPath) {
 CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoRes) {
 	if (strPath.Left(2) == _T("\\\\"))
 	{
-		TRACE1("CheckNetPath %s\n", strPath);
+		FTRACE1("CheckNetPath %s\n", strPath);
 		int iStart = 2;
 		CString strSrv = strPath.Tokenize(_T("\\"), iStart);
 		CDriveInfo &driveInfoSrv = GetNetDriveInfo(strSrv);
@@ -316,12 +316,15 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 			return driveInfoRes.StatusMsg();	//return _T("network is not alive.");
 		}
 
-		TRACE1("CheckNetPath ping %s\n", strSrv);
+		FTRACE1("CheckNetPath ping %s\n", strSrv);
 		CPing ping;
 		BOOL bRetH = ping.SetHostIP(CStringA(strSrv));
 		BOOL bRetP = bRetH && ping.SendEcho();
 //		if (bRetH && !bRetP)
+//		{
+//			Sleep(500);
 //			bRetP = ping.SendEcho();	// retrying
+//		}
 		if (!bRetP)
 		{
 			if (driveInfoSrv.IsStartOutdated())
@@ -333,16 +336,17 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 			}
 			driveInfoSrv.SetStatus(Status::NoPing);
 			driveInfoRes = driveInfoSrv;
-			TRACE1("ping=%s\n", driveInfoRes.StatusMsg());
+			FTRACE1("ping=%s\n", driveInfoRes.StatusMsg());
 			return driveInfoRes.StatusMsg();
 		}
-		TRACE0("ping=ok\n");
+		else
+			TRACE0("ping=ok\n");
 
 		if (!driveInfoSrv.NetConn())
 		{
 			driveInfoSrv.SetStatus(Status::Connecting);
 			driveInfoRes = driveInfoSrv;
-			TRACE1("conn=%s\n", driveInfoRes.StatusMsg());
+			FTRACE1("conn=%s\n", driveInfoRes.StatusMsg());
 			return driveInfoRes.StatusMsg();
 		}
 
@@ -350,7 +354,7 @@ CString CDriveCheck::CheckNetPath(const CString& strPath, CDriveInfo &driveInfoR
 		{
 			driveInfoSrv.SetStatus(Status::Starting);	//  retry after 3 min
 			driveInfoRes = driveInfoSrv;
-			TRACE1("conn=%s\n", driveInfoRes.StatusMsg());
+			FTRACE1("conn=%s\n", driveInfoRes.StatusMsg());
 			return driveInfoRes.StatusMsg();
 		}
 		driveInfoSrv.SetStatus(Status::Running);

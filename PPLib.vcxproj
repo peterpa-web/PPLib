@@ -98,6 +98,7 @@
     <ClCompile Include="DesktopToast.cpp" />
     <ClCompile Include="DriveCheck.cpp" />
     <ClCompile Include="EventLog.cpp" />
+    <ClCompile Include="FileTrace.cpp" />
     <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="JsonParser.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="DesktopToast.h" />
     <ClInclude Include="DriveCheck.h" />
     <ClInclude Include="EventLog.h" />
+    <ClInclude Include="FileTrace.h" />
     <ClInclude Include="FileUtil.h" />
     <ClInclude Include="LoopThread.h" />
     <ClInclude Include="PortableDevicePP.h" />

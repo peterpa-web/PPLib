@@ -34,3 +34,4 @@
 #include <afxwin.h>         // MFC-Kern- und Standardkomponenten
 
 // TODO: Verweisen Sie hier auf zusätzliche Header, die Ihr Programm erfordert
+#include "FileTrace.h"

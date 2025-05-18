@@ -305,9 +305,7 @@ BOOL CEventLog::Write(
 	{
 		wNumStrings = 1;
 		alpString[ 0 ] = pString;
-#ifdef _DEBUG
-		TRACE1( "LogWrite(): %s\n", pString );
-#endif
+		FTRACE1( "LogWrite(): %s\n", pString );
 	}
 
 	return Write( 
@@ -441,7 +439,7 @@ BOOL CEventLogException::ReportEvent(
 #ifdef _DEBUG
 	CString strMsg;
 	strMsg.Format( _T("CEventLogException::ReportEvent %s %s\n"), (LPCTSTR)m_strMsg, (LPCTSTR)m_strContext );
-	TRACE( strMsg );
+	FTRACE( strMsg );
 #endif
 
 	return ( eventLog.Write( 
