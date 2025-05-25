@@ -1,10 +1,6 @@
 #pragma once
 // compare to atltrace.h
 
-#define FTRACEINIT(sDir,sFile) CFileTrace::Init(sDir, sFile)
-#define FTRACEEXIT CFileTrace::Exit()
-//	#define FTRACEFLUSH CFileTrace::FlushEnable()
-
 #ifndef FILETRACE
 #define FILETRACE CFTraceFileAndLineInfo(__FILE__, __LINE__)
 #endif
@@ -169,4 +165,7 @@ inline void __cdecl AtlTrace2(
 #define FTRACE2(sz, p1, p2)      FTRACE(_T(sz), p1, p2)
 #define FTRACE3(sz, p1, p2, p3)  FTRACE(_T(sz), p1, p2, p3)
 #define FTRACE FILETRACE
+
+#define FTRACEINIT(sDir,sFile) CFileTrace::Init(sDir, sFile); FTRACE0("FTRACEINIT\n")
+#define FTRACEEXIT FTRACE0("FTRACEEXIT\n"); CFileTrace::Exit()
 

@@ -27,6 +27,7 @@ void CFileTrace::Init(LPCTSTR pszDir, LPCTSTR pszFile)
 		}
 	}
 	s_strFileBase = strDataDir + '\\' + pszFile;
+	Write(nullptr, -1, nullptr, nullptr);	// open file & write header
 }
 
 void CFileTrace::Write(
@@ -35,6 +36,7 @@ void CFileTrace::Write(
 	_In_z_ LPCWSTR pwszFmt,
 	_In_ va_list args)
 {
+	ASSERT(s_file.m_hFile != NULL);		// file is not closed by exit
 	CTime timeNow = CTime::GetCurrentTime();
 	if (s_file.m_hFile != INVALID_HANDLE_VALUE && timeNow >= s_timeNextFile)
 		s_file.Close();
@@ -58,6 +60,8 @@ void CFileTrace::Write(
 		CString strStart = timeNow.Format(_T("\n======= CreateTracefile %y/%m/%d %H:%M:%S\n"));
 		s_file.WriteString(strStart);
 		s_timeNextFile = CTime(timeNow.GetYear(), timeNow.GetMonth(), timeNow.GetDay(), 0, 0, 0) + CTimeSpan(1, 0, 0, 0);
+		if (pszFileName == nullptr && nLine == -1)
+			return;		// finish after writing header
 	}
 	CString strLine = timeNow.Format(_T("%H:%M:%S "));
 //	if (s_file.m_hFile != INVALID_HANDLE_VALUE)
@@ -100,7 +104,7 @@ void CFileTrace::Write(
 		return;
 	}
 
-	if (s_file.m_hFile != INVALID_HANDLE_VALUE)
+	if (s_file.m_hFile != INVALID_HANDLE_VALUE && s_file.m_hFile != NULL)
 	{
 		wchar_t* p = wcsrchr(fileName, '\\');
 		if (p != nullptr)
@@ -121,6 +125,7 @@ void CFileTrace::Write(
 
 void CFileTrace::Exit()
 {
-	if (s_file.m_hFile != INVALID_HANDLE_VALUE)
+	if (s_file.m_hFile != INVALID_HANDLE_VALUE && s_file.m_hFile != NULL)
 		s_file.Close();
+	s_file.m_hFile = NULL;
 }

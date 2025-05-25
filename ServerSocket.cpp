@@ -19,7 +19,6 @@ CServerSocket::~CServerSocket()
 	if (m_pThread)
 		WaitThreadFinished();
 	delete m_pevStop;
-	delete m_pThread;
 }
 
 void CServerSocket::AddThreadSocket( CThreadSocket* pTS )
@@ -208,5 +207,7 @@ void CServerSocket::WaitThreadFinished()
 	Sleep(100);
 	Close();
 	VERIFY(::WaitForSingleObject(m_pThread->m_hThread, INFINITE) == WAIT_OBJECT_0);
+	delete m_pThread;
+	m_pThread = NULL;
 	FTRACE0("CServerSocket::WaitThreadFinished done\n");
 }
