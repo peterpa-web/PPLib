@@ -56,7 +56,7 @@ constexpr auto MAGICPORT = "9";
 
 bool CDriveCheck::CDriveInfo::WakeLan()
 {
-	TRACE0("CDriveCheck::CDriveInfo:: WakeLan\n");
+	FTRACE0("CDriveCheck::CDriveInfo:: WakeLan\n");
 	//	unsigned char mac[6] = { 0xCC, 0x5D, 0x4E, 0xC9, 0xFF, 0x40 };
 		// 6x FF + 16x MACAddr (6Bytes)
 	unsigned char buf[6 + 16 * 6];

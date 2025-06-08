@@ -129,3 +129,11 @@ void CFileTrace::Exit()
 		s_file.Close();
 	s_file.m_hFile = NULL;
 }
+
+CString CFileTrace::GetFilePath()
+{
+	if (s_file.m_hFile == INVALID_HANDLE_VALUE || s_file.m_hFile == NULL)
+		return CString();
+	CString s = s_file.GetFilePath();
+	return s;
+}

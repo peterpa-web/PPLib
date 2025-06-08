@@ -16,6 +16,7 @@ public:
 		_In_ va_list args);
 	static void Exit();
 	static bool IsNoInit() { return s_strFileBase.IsEmpty(); }
+	static CString GetFilePath();
 
 protected:
 	static CString s_strFileBase;

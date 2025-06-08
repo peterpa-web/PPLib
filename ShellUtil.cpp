@@ -26,7 +26,7 @@ void CShellUtil::Exec(const CString& strPath, bool bHidden)
 	ZeroMemory(&pi, sizeof(pi));
 
 	// Start the child process. 
-	CreateProcess(NULL,  // No module name (use command line). 
+	BOOL b = CreateProcess(NULL,  // No module name (use command line). 
 		szCmd,			 // Command line. 
 		NULL,            // Process handle not inheritable. 
 		NULL,            // Thread handle not inheritable. 
@@ -36,6 +36,11 @@ void CShellUtil::Exec(const CString& strPath, bool bHidden)
 		NULL,            // Use parent's starting directory. 
 		&si,             // Pointer to STARTUPINFO structure.
 		&pi);            // Pointer to PROCESS_INFORMATION structure.
+	if (!b)
+	{
+		DWORD dwLastErr = GetLastError();
+		FTRACE2("Exec %s = %d\n", szCmd, dwLastErr);
+	}
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 }
