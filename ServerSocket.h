@@ -26,8 +26,8 @@ public:
 
 protected:
 	CPtrArray m_apThreadSocket;
-	CEvent* m_pevStop;
-	CWinThread *m_pThread;
+	CEvent* m_pevStop = nullptr;
+	CWinThread *m_pThread = nullptr;
 	static UINT ThreadProc(LPVOID pParam);
 	UINT ThreadProcInt();
 };

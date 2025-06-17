@@ -10,8 +10,6 @@
 
 CServerSocket::CServerSocket()
 {
-	m_pevStop = NULL;
-	m_pThread = NULL;
 }
 
 CServerSocket::~CServerSocket()
@@ -48,7 +46,7 @@ BOOL CServerSocket::Run()
 			pTH = GetThreadSocket( nConn );
 			if ( pTH->IsReady() )
 			{
-				FTRACE1( "CServerSocket::Run using free socket %d\n", nConn );
+				FTRACE1( "Run using free socket %d\n", nConn );
 				break;
 			}
 
@@ -65,23 +63,23 @@ BOOL CServerSocket::Run()
 			{
 				paEvHandles[ n ] = GetThreadSocket( n-1 )->GetThreadHandle();
 			}
-			FTRACE0( "CServerSocket::Run waiting for socket\n" );
+			FTRACE0( "Run waiting for socket\n" );
 			DWORD dwLock = WaitForMultipleObjects( nTH+1, paEvHandles, FALSE, INFINITE );
 			if ( dwLock == WAIT_FAILED )
 			{
-				FTRACE0( "CServerSocket::Run wait failed\n" );
+				FTRACE0( "Run wait failed\n" );
 				delete [] paEvHandles;
 				return FALSE;
 			}
 			if ( dwLock == WAIT_OBJECT_0 )
 			{
-				FTRACE0( "CServerSocket::Run wait stopped\n" );
+				FTRACE0( "Run wait stopped\n" );
 				delete [] paEvHandles;
 				return TRUE;		// Server Stopped
 			}
 
 			nConn = dwLock - WAIT_OBJECT_0 - 1;
-			FTRACE1( "CServerSocket::Run using ended socket %d\n", nConn );
+			FTRACE1( "Run using ended socket %d\n", nConn );
 			pTH = GetThreadSocket( nConn );
 			VERIFY( pTH->IsReady() );	// schließt ggf. alte thread
 
@@ -134,7 +132,7 @@ CThreadSocket* CServerSocket::TerminateThreadSockets()
 		CThreadSocket* pTH = GetThreadSocket( n );
 		if ( ! pTH->IsReady() )
 		{
-			FTRACE1( "CServerSocket::TerminateThreadSockets returning busy socket %d\n", n );
+			FTRACE1( "TerminateThreadSockets returning busy socket %d\n", n );
 			return pTH;
 		}
 		delete pTH;
@@ -145,13 +143,13 @@ CThreadSocket* CServerSocket::TerminateThreadSockets()
 
 BOOL CServerSocket::BeginThread(int nPort)
 {
-	FTRACE1("CServerSocket::BeginThread nPort=%d\n", nPort);
+	FTRACE1("BeginThread nPort=%d\n", nPort);
 	if (!Create(nPort)) {
-		FTRACE0("CServerSocket::BeginThread Create failed\n");
+		FTRACE0("BeginThread Create failed\n");
 		return FALSE;
 	}
 	if (!Listen()) {
-		FTRACE0("CServerSocket::BeginThread Listen failed\n");
+		FTRACE0("BeginThread Listen failed\n");
 		return FALSE;
 	}
 	m_pThread = AfxBeginThread(&ThreadProc, this);
@@ -171,7 +169,7 @@ UINT CServerSocket::ThreadProcInt()
 	BOOL bResult = Run();
 	ASSERT(bResult);
 
-	FTRACE0("CServerSocket::ThreadProcInt cleanup\n");
+	FTRACE0("ThreadProcInt cleanup\n");
 	for (int i = 0; i < m_apThreadSocket.GetSize(); ++i)
 	{
 		GetThreadSocket(i)->Stop();
@@ -186,7 +184,7 @@ UINT CServerSocket::ThreadProcInt()
 		pTH->Close();
 		pTH = TerminateThreadSockets();
 		if (--nLimit < 0) {
-			FTRACE0("CServerSocket::ThreadProcInt cleanup Timeout TerminateThreadSockets\n");
+			FTRACE0("ThreadProcInt cleanup Timeout TerminateThreadSockets\n");
 //			CsniEventLog::Write(EVENTLOG_WARNING_TYPE, 0, MSG_INFO, _T("Timeout TerminateThreadSockets"));
 			break;
 		}
@@ -199,7 +197,7 @@ void CServerSocket::WaitThreadFinished()
 	if (m_pThread == NULL)
 		return;
 
-	FTRACE0("CServerSocket::WaitThreadFinished\n");
+	FTRACE0("WaitThreadFinished\n");
 	if (m_pevStop != NULL)
 		m_pevStop->SetEvent();
 
@@ -209,5 +207,5 @@ void CServerSocket::WaitThreadFinished()
 	VERIFY(::WaitForSingleObject(m_pThread->m_hThread, INFINITE) == WAIT_OBJECT_0);
 	delete m_pThread;
 	m_pThread = NULL;
-	FTRACE0("CServerSocket::WaitThreadFinished done\n");
+	FTRACE0("WaitThreadFinished done\n");
 }
