@@ -1,5 +1,6 @@
 #pragma once
 // compare to atltrace.h
+#include <afxmt.h>
 
 #ifndef FILETRACE
 #define FILETRACE CFTraceFileAndLineInfo(__FILE__, __LINE__)
@@ -22,6 +23,7 @@ protected:
 	static CString s_strFileBase;
 	static CStdioFile s_file;
 	static CTime s_timeNextFile;
+	static CCriticalSection s_cs;
 };
 
 class CFTraceFileAndLineInfo

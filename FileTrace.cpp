@@ -6,6 +6,8 @@
 CString CFileTrace::s_strFileBase;
 CStdioFile CFileTrace::s_file;
 CTime CFileTrace::s_timeNextFile = 0;
+CCriticalSection CFileTrace::s_cs;
+
 
 void CFileTrace::Init(LPCTSTR pszDir, LPCTSTR pszFile)
 {
@@ -36,6 +38,7 @@ void CFileTrace::Write(
 	_In_z_ LPCWSTR pwszFmt,
 	_In_ va_list args)
 {
+	CSingleLock lock(&s_cs, TRUE);
 	ASSERT(s_file.m_hFile != NULL);		// file is not closed by exit
 	CTime timeNow = CTime::GetCurrentTime();
 	if (s_file.m_hFile != INVALID_HANDLE_VALUE && timeNow >= s_timeNextFile)
