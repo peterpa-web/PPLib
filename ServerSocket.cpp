@@ -29,18 +29,29 @@ BOOL CServerSocket::Run()
 	struct timeval		timeout;
 	fd_set				readfds;
 
-	ASSERT( m_apThreadSocket.GetSize() > 0 );
+	m_bStop = false;
 	if (m_pevStop == NULL)
 		m_pevStop = new CEvent(FALSE, TRUE);
 	ASSERT( m_pevStop != NULL );
 
-	while ( TRUE )
+	while (!m_bStop)
 	{
+		int nTH = (int)m_apThreadSocket.GetSize();
+		if (nTH < 1)
+		{
+			FTRACE0("Run missing threads\n");
+			return TRUE;
+		}
+		if (m_bPause)
+		{
+			Sleep(1000);
+			continue;
+		}
+
 		CThreadSocket* pTH = NULL;
 		int nConn;
 
 		// freien ThreadSocket suchen
-		int nTH = (int)m_apThreadSocket.GetSize();
 		for ( nConn = 0; nConn < nTH; nConn++ )
 		{
 			pTH = GetThreadSocket( nConn );
@@ -88,17 +99,25 @@ BOOL CServerSocket::Run()
 
 		// auf Verbindung warten
 
-		FD_ZERO (&readfds);
-		FD_SET ( m_hSocket, &readfds );        //  SOCKET einstellen
- 		timeout.tv_sec  = 0;
-		timeout.tv_usec = 0;              
- 
-		int iRc = select( 0, &readfds, NULL, NULL, &timeout );
-		if ( iRc == SOCKET_ERROR ) 
+		int iSel = 0;
+		while (iSel == 0)
 		{
-			SetLastError( WSAGetLastError() );
-			return FALSE;
+			FD_ZERO(&readfds);
+			FD_SET(m_hSocket, &readfds);        //  SOCKET einstellen
+			timeout.tv_sec = 1;
+			timeout.tv_usec = 0;
+
+			iSel = select(0, &readfds, NULL, NULL, &timeout);
+			if (iSel == SOCKET_ERROR)
+			{
+				SetLastError(WSAGetLastError());
+				return FALSE;
+			}
+			if (m_bPause || m_bStop)
+				break;
 		}
+		if (m_bPause || m_bStop)
+			continue;
 
 		SOCKADDR sockAddr;
 		memset(&sockAddr,0,sizeof(sockAddr));
@@ -111,13 +130,14 @@ BOOL CServerSocket::Run()
 			if ( dwProblem == WSAEINTR )	// server stopped via closesocket
 				break;
 
+			FTRACE1("Run FALSE (%d)\n", dwProblem);
 			return FALSE;
 		}
 
 		pTH->StartThread( nConn, (SOCKADDR_IN*)&sockAddr );
 	}
 
-	// stopped
+	FTRACE0("Run finished\n");
 	return TRUE;
 }
 
@@ -167,7 +187,7 @@ UINT CServerSocket::ThreadProc(LPVOID pParam)
 UINT CServerSocket::ThreadProcInt()
 {
 	BOOL bResult = Run();
-	ASSERT(bResult);
+//	ASSERT(bResult);
 
 	FTRACE0("ThreadProcInt cleanup\n");
 	for (int i = 0; i < m_apThreadSocket.GetSize(); ++i)
@@ -198,8 +218,7 @@ void CServerSocket::WaitThreadFinished()
 		return;
 
 	FTRACE0("WaitThreadFinished\n");
-	if (m_pevStop != NULL)
-		m_pevStop->SetEvent();
+	Stop();
 
 	ShutDown(2);
 	Sleep(100);
@@ -208,4 +227,26 @@ void CServerSocket::WaitThreadFinished()
 	delete m_pThread;
 	m_pThread = NULL;
 	FTRACE0("WaitThreadFinished done\n");
+}
+
+bool CServerSocket::Pause(bool b)
+{
+	m_bPause = b;
+	FTRACE1("Pause %d\n", b);
+	if (!b)
+		return true;
+
+	for (int i = 0; i < m_apThreadSocket.GetSize(); ++i)
+	{
+		if (!GetThreadSocket(i)->IsReady())
+			return false;
+	}
+	return true;
+}
+
+void CServerSocket::Stop()
+{
+	m_bStop = true;
+	if (m_pevStop != NULL)
+		m_pevStop->SetEvent();
 }
