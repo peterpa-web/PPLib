@@ -130,7 +130,7 @@ BOOL CServerSocket::Run()
 			if ( dwProblem == WSAEINTR )	// server stopped via closesocket
 				break;
 
-			FTRACE1("Run FALSE (%d)\n", dwProblem);
+			FTRACE1("Run Accept=%d\n", dwProblem);
 			return FALSE;
 		}
 
