@@ -4,6 +4,10 @@
 class CPtrOwnerList : public CPtrList
 {
 public:
+	CPtrOwnerList(INT_PTR nBlockSize = 10)
+		: CPtrList(nBlockSize) {
+	}
+
 	~CPtrOwnerList() { RemoveAll(); }
 	void RemoveAll() {
 		POSITION pos = GetHeadPosition();
