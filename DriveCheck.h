@@ -65,7 +65,7 @@ public:
 		CStringW m_strPasswd;
 	};
 
-	void Reset();
+	void Reset(bool bFull = false);
 	void ResetPath(const CString strPath);
 	CString CheckParentPath(const CString& strPath); // returns error msg
 	CString CheckPath(const CString& strPath, bool bDir = false); // returns error msg

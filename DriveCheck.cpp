@@ -49,6 +49,11 @@ void CDriveCheck::CDriveInfo::SetStatus(enum Status stat)
 	if (stat != Status::Connecting)
 		m_strNetConnStatus.Empty();
 	m_timeUpd = CTime::GetCurrentTime() + d;
+	if (stat == Status::Unknown)
+	{
+		d = 3600;
+		m_timeStart = m_timeUpd - d;	// -1h: avoid waiting startup share
+	}
 	m_status = stat;
 }
 
@@ -214,12 +219,16 @@ CDriveCheck::CDriveInfo& CDriveCheck::GetNetDriveInfo(CString strSrv)
 }
 
 
-void CDriveCheck::Reset()
+void CDriveCheck::Reset(bool bFull)
 {
-	TRACE0("CDriveCheck::Reset()\n");
+	TRACE1("CDriveCheck::Reset(%d)\n", bFull);
 	POSITION pos = m_listDriveInfo.GetHeadPosition();
 	while (pos != NULL)
-		m_listDriveInfo.GetNext(pos).SetStatus(Status::Reset);
+	{
+		Status s = bFull ? Status::Unknown : Status::Reset;
+		CDriveInfo& di = m_listDriveInfo.GetNext(pos);
+		di.SetStatus(s);
+	}
 	m_dwDrives = 0;
 }
 
